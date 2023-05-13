@@ -1,0 +1,30 @@
+﻿{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:38511",
+      "sslPort": 44362
+    }
+  },
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "http://localhost:5400",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOMAIN_PATH": "",
+        "JWT_ISSUER": "DenDa",
+        "JWT_AUDIENCE": "DenDa",
+        "JWT_ACCESS_TOKEN_SECRET": "SXI3ZOFOKclSrticLeeHq81OBauR3cszI",
+        "JWT_ACCESS_TOKEN_EXPIRES": "525960",
+        "JWT_RESET_TOKEN_EXPIRES": "525960",
+        "CONNECTION_STRING" : "Server=localhost;Database=BirdManagement;User ID=sa;Password=123;TrustServerCertificate=True;"
+      }
+    }
+  }
+}
