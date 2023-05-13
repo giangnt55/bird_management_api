@@ -13,7 +13,9 @@ public class Token : BaseEntity
     public TokenType Type { get; set; }
     public DateTime AccessExpiredAt { get; set; }
     public DateTime RefreshExpiredAt { get; set; }
-    
+
+    public virtual User User { get; set; } = new User();
+
 }
 
 public enum TokenStatus
@@ -39,5 +41,9 @@ public class TokenConfig : IEntityTypeConfiguration<Token>
         builder.Property(a => a.AccessExpiredAt).IsRequired();
         builder.Property(a => a.RefreshExpiredAt).IsRequired();
         builder.Property(a => a.Status).IsRequired();
+        builder.HasOne(t => t.User)
+            .WithMany(u => u.Tokens)
+            .HasForeignKey(t => t.UserId)
+            .OnDelete(DeleteBehavior.Cascade); 
     }
 }

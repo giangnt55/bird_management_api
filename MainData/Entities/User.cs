@@ -15,6 +15,8 @@ public class User : BaseEntity
     public string? Username { get; set; }
     public string? Password { get; set; }
     public string? Salt { get; set; }
+
+    public virtual IEnumerable<Token> Tokens { get; set; } = new List<Token>();
 }
 
 public enum UserRole
@@ -39,5 +41,9 @@ public class UserConfig : IEntityTypeConfiguration<User>
         builder.Property(x => x.Username).IsRequired().HasMaxLength(50);;
         builder.Property(x => x.Password).IsRequired();
         builder.Property(x => x.Salt).IsRequired();
+        builder.HasMany(u => u.Tokens)
+            .WithOne(t => t.User)
+            .HasForeignKey(t => t.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
