@@ -60,7 +60,8 @@ namespace MainData.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
+                        .IsRequired()
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -126,13 +127,11 @@ namespace MainData.Migrations
 
             modelBuilder.Entity("MainData.Entities.Token", b =>
                 {
-                    b.HasOne("MainData.Entities.User", "User")
+                    b.HasOne("MainData.Entities.User", null)
                         .WithMany("Tokens")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("MainData.Entities.User", b =>

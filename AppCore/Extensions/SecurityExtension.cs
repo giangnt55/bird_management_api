@@ -26,7 +26,7 @@ public static class SecurityExtension
         return passwordHasher.HashPassword(new T(), password + salt);
     }
 
-    public static bool VerifyPassword<T>(this string password, string salt, string hash) where T : class, new()
+    public static bool VerifyPassword<T>(this string password, string? salt, string? hash) where T : class, new()
     {
         var passwordHasher = new PasswordHasher<T>();
         return passwordHasher.VerifyHashedPassword(new T(), hash, password + salt) ==
