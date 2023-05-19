@@ -5,8 +5,8 @@ namespace API.Dtos;
 
 public class AccountCredentialLoginDto
 {
-    [Required] public string? Username { get; set; }
-    [Required] public string? Password { get; set; }
+    [Required] public string Username { get; set; } = string.Empty;
+    [Required] public string Password { get; set; } = string.Empty;
 }
 
 public class AuthDto

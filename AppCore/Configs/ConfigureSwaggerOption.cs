@@ -27,7 +27,7 @@ public class ConfigureSwaggerOption : IConfigureNamedOptions<SwaggerGenOptions>
         {
             foreach (var description in _versionProvider.ApiVersionDescriptions)
             {
-                options.SwaggerDoc(group, CreateVersionInfo(group, description));
+                options.SwaggerDoc(group, CreateVersionInfo(group!, description));
             }
         }
 
@@ -53,7 +53,7 @@ public class ConfigureSwaggerOption : IConfigureNamedOptions<SwaggerGenOptions>
         });
     }
 
-    public void Configure(string name, SwaggerGenOptions options)
+    public void Configure(string? name, SwaggerGenOptions options)
     {
         Configure(options);
     }
