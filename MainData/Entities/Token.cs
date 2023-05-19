@@ -9,12 +9,10 @@ public class Token : BaseEntity
     public string? AccessToken { get; set; }
     public string? RefreshToken { get; set; }
     public TokenStatus Status { get; set; }
-    public Guid UserId { get; set; }
+    public Guid? UserId { get; set; }
     public TokenType Type { get; set; }
     public DateTime AccessExpiredAt { get; set; }
     public DateTime RefreshExpiredAt { get; set; }
-
-    public virtual User User { get; set; } = new User();
 
 }
 
@@ -41,9 +39,5 @@ public class TokenConfig : IEntityTypeConfiguration<Token>
         builder.Property(a => a.AccessExpiredAt).IsRequired();
         builder.Property(a => a.RefreshExpiredAt).IsRequired();
         builder.Property(a => a.Status).IsRequired();
-        builder.HasOne(t => t.User)
-            .WithMany(u => u.Tokens)
-            .HasForeignKey(t => t.UserId)
-            .OnDelete(DeleteBehavior.Cascade); 
     }
 }

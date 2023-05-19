@@ -83,7 +83,7 @@ public class HandleResponseMiddleware
                 if (exception is DbUpdateConcurrencyException)
                 {
                     var entry = exception.Entries.Single();
-                    var databaseValues = entry.GetDatabaseValues().ToObject();
+                    var databaseValues = entry.GetDatabaseValues()!.ToObject();
                     var clientValues = entry.Entity;
 
                     await HandleExceptionAsync(

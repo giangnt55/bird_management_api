@@ -7,6 +7,7 @@ public static class RegisterService
     public static IServiceCollection RegisAllService(this IServiceCollection services, string[] projects,
         string[] ignoreProjects = null)
     {
+        if (ignoreProjects == null) throw new ArgumentNullException(nameof(ignoreProjects));
         var assemblies = AppDomain.CurrentDomain.GetAssemblies()
             .Where(x => x.FullName != null && projects.Any(z => x.FullName.Split(",")[0] == z))
             .ToList();
