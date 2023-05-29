@@ -4,6 +4,7 @@ using MainData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MainData.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20230529113700_u10")]
+    partial class u10
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,115 +111,6 @@ namespace MainData.Migrations
                     b.HasIndex("PostId");
 
                     b.ToTable("Comments");
-                });
-
-            modelBuilder.Entity("MainData.Entities.Event", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CoverImage")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("EditorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("EvaluationStrategy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EventName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Location")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("MaxParticipants")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MinParticipants")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Prerequisite")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Events");
-                });
-
-            modelBuilder.Entity("MainData.Entities.FeedBack", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Content")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("EditorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("EventId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ParticipantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int?>("Rating")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EventId");
-
-                    b.HasIndex("ParticipantId");
-
-                    b.ToTable("FeedBacks");
                 });
 
             modelBuilder.Entity("MainData.Entities.Group", b =>
@@ -421,42 +315,6 @@ namespace MainData.Migrations
                     b.ToTable("Notifications");
                 });
 
-            modelBuilder.Entity("MainData.Entities.Participant", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("EditorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("EventId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Role")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatorId");
-
-                    b.HasIndex("EventId");
-
-                    b.ToTable("Participants");
-                });
-
             modelBuilder.Entity("MainData.Entities.Post", b =>
                 {
                     b.Property<Guid>("Id")
@@ -496,42 +354,6 @@ namespace MainData.Migrations
                     b.HasIndex("GroupId");
 
                     b.ToTable("Post");
-                });
-
-            modelBuilder.Entity("MainData.Entities.Report", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("EditorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("TargetId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatorId");
-
-                    b.HasIndex("TargetId");
-
-                    b.ToTable("Reports");
                 });
 
             modelBuilder.Entity("MainData.Entities.Token", b =>
@@ -663,25 +485,6 @@ namespace MainData.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("MainData.Entities.FeedBack", b =>
-                {
-                    b.HasOne("MainData.Entities.Event", "Event")
-                        .WithMany("FeedBacks")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MainData.Entities.Participant", "Participant")
-                        .WithMany("FeedBacks")
-                        .HasForeignKey("ParticipantId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Event");
-
-                    b.Navigation("Participant");
-                });
-
             modelBuilder.Entity("MainData.Entities.GroupMember", b =>
                 {
                     b.HasOne("MainData.Entities.Group", "Group")
@@ -737,23 +540,6 @@ namespace MainData.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("MainData.Entities.Participant", b =>
-                {
-                    b.HasOne("MainData.Entities.User", "User")
-                        .WithMany("Participants")
-                        .HasForeignKey("CreatorId");
-
-                    b.HasOne("MainData.Entities.Event", "Event")
-                        .WithMany("Participants")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Event");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("MainData.Entities.Post", b =>
                 {
                     b.HasOne("MainData.Entities.Group", "Group")
@@ -763,31 +549,6 @@ namespace MainData.Migrations
                         .IsRequired();
 
                     b.Navigation("Group");
-                });
-
-            modelBuilder.Entity("MainData.Entities.Report", b =>
-                {
-                    b.HasOne("MainData.Entities.User", "User")
-                        .WithMany("Reports")
-                        .HasForeignKey("CreatorId");
-
-                    b.HasOne("MainData.Entities.Comment", "Comment")
-                        .WithMany("Reports")
-                        .HasForeignKey("TargetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("MainData.Entities.Post", "Post")
-                        .WithMany("Reports")
-                        .HasForeignKey("TargetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Comment");
-
-                    b.Navigation("Post");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("MainData.Entities.Token", b =>
@@ -802,15 +563,6 @@ namespace MainData.Migrations
             modelBuilder.Entity("MainData.Entities.Comment", b =>
                 {
                     b.Navigation("Likes");
-
-                    b.Navigation("Reports");
-                });
-
-            modelBuilder.Entity("MainData.Entities.Event", b =>
-                {
-                    b.Navigation("FeedBacks");
-
-                    b.Navigation("Participants");
                 });
 
             modelBuilder.Entity("MainData.Entities.Group", b =>
@@ -820,18 +572,11 @@ namespace MainData.Migrations
                     b.Navigation("Posts");
                 });
 
-            modelBuilder.Entity("MainData.Entities.Participant", b =>
-                {
-                    b.Navigation("FeedBacks");
-                });
-
             modelBuilder.Entity("MainData.Entities.Post", b =>
                 {
                     b.Navigation("Comments");
 
                     b.Navigation("Likes");
-
-                    b.Navigation("Reports");
                 });
 
             modelBuilder.Entity("MainData.Entities.User", b =>
@@ -843,10 +588,6 @@ namespace MainData.Migrations
                     b.Navigation("Likes");
 
                     b.Navigation("Notifications");
-
-                    b.Navigation("Participants");
-
-                    b.Navigation("Reports");
 
                     b.Navigation("Tokens");
                 });
