@@ -11,7 +11,7 @@ public class FeedBack : BaseEntity
     public string? Content { get; set; }
     public int? Rating { get; set; }
     
-    //Realtionship
+    //Relationship
     public virtual Event Event { get; set; } = new Event();
     public virtual Participant Participant { get; set; } = new Participant();
 }
