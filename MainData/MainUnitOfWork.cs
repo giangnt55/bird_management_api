@@ -14,8 +14,6 @@ public class MainUnitOfWork : IDisposable
     
     public BaseRepository<User> UserRepository => new(_context);
     public BaseRepository<Token> TokenRepository => new(_context);
-    public BaseRepository<Group> GroupRepository => new(_context);
-    public BaseRepository<GroupMember> GroupMemberRepository => new(_context);
     public BaseRepository<Notification> NotificationRepository => new(_context);
     public BaseRepository<Post> PostRepository => new(_context);
     public BaseRepository<News> NewsRepository => new(_context);

@@ -219,81 +219,6 @@ namespace MainData.Migrations
                     b.ToTable("FeedBacks");
                 });
 
-            modelBuilder.Entity("MainData.Entities.Group", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CoverImage")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("EditorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("GroupName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Groups");
-                });
-
-            modelBuilder.Entity("MainData.Entities.GroupMember", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("EditorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("GroupId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Role")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GroupId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("GroupMembers");
-                });
-
             modelBuilder.Entity("MainData.Entities.Like", b =>
                 {
                     b.Property<Guid>("Id")
@@ -493,7 +418,7 @@ namespace MainData.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GroupId");
+                    b.HasIndex("CreatorId");
 
                     b.ToTable("Post");
                 });
@@ -682,25 +607,6 @@ namespace MainData.Migrations
                     b.Navigation("Participant");
                 });
 
-            modelBuilder.Entity("MainData.Entities.GroupMember", b =>
-                {
-                    b.HasOne("MainData.Entities.Group", "Group")
-                        .WithMany("GroupMembers")
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MainData.Entities.User", "User")
-                        .WithMany("GroupMembers")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Group");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("MainData.Entities.Like", b =>
                 {
                     b.HasOne("MainData.Entities.User", "User")
@@ -756,13 +662,11 @@ namespace MainData.Migrations
 
             modelBuilder.Entity("MainData.Entities.Post", b =>
                 {
-                    b.HasOne("MainData.Entities.Group", "Group")
+                    b.HasOne("MainData.Entities.User", "User")
                         .WithMany("Posts")
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CreatorId");
 
-                    b.Navigation("Group");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("MainData.Entities.Report", b =>
@@ -813,13 +717,6 @@ namespace MainData.Migrations
                     b.Navigation("Participants");
                 });
 
-            modelBuilder.Entity("MainData.Entities.Group", b =>
-                {
-                    b.Navigation("GroupMembers");
-
-                    b.Navigation("Posts");
-                });
-
             modelBuilder.Entity("MainData.Entities.Participant", b =>
                 {
                     b.Navigation("FeedBacks");
@@ -838,13 +735,13 @@ namespace MainData.Migrations
                 {
                     b.Navigation("Comments");
 
-                    b.Navigation("GroupMembers");
-
                     b.Navigation("Likes");
 
                     b.Navigation("Notifications");
 
                     b.Navigation("Participants");
+
+                    b.Navigation("Posts");
 
                     b.Navigation("Reports");
 

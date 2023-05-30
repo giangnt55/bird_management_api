@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using AppCore.Extensions;
 using AppCore.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +14,13 @@ public interface IBaseRepository<TEntity> where TEntity : BaseEntity
         string orderBy,
         int skip,
         int limit);
+    
+    public Task<FindResult<TDto>> FindResultAsync<TDto>(
+        Expression<Func<TEntity, bool>>[]? filters,
+        string orderBy,
+        int skip,
+        int limit);
+    
 
     public Task<List<TEntity?>> FindAsync(
         Expression<Func<TEntity, bool>>[]? filters,
@@ -141,7 +149,7 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
         var items = await query.ToListAsync();
         return FindResult<TEntity>.Success(items!, totalCount);
     }
-    
+
     public async Task<TEntity?> FindOneAsync(Guid systemId)
     {
         return await _dbSet.FirstOrDefaultAsync(x => x.Id == systemId && !x.DeletedAt.HasValue);
@@ -252,5 +260,27 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
             ? query.OrderByDescending(x => EF.Property<TEntity>(x!, propertyName))
             : query.OrderBy(x => EF.Property<TEntity>(x!, propertyName));
         return query;
+    }
+    
+    public async Task<FindResult<TDto>> FindResultAsync<TDto>(Expression<Func<TEntity, bool>>[]? filters, string orderBy,
+        int skip, int limit)
+    {
+        IQueryable<TEntity> query = _dbSet;
+        query = query.Where(x => !x.DeletedAt.HasValue);
+        if (filters != null && filters.Any())
+            query = filters.Aggregate(query, (current, filter) => current.Where(filter));
+
+        if (!string.IsNullOrEmpty(orderBy))
+            query = OrderBy(query, orderBy);
+
+        var totalCount = await query.LongCountAsync();
+        if (skip > 0)
+            query = query.Skip(skip);
+
+        if (limit > 0)
+            query = query.Take(limit);
+
+        var result = await query.ToListAsync();
+        return FindResult<TDto>.Success(result.ProjectTo<TEntity, TDto>(), totalCount);
     }
 }

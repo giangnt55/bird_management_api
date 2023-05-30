@@ -7,16 +7,16 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace API.Controllers;
 
-public class AuthenticationController : BaseController
+public class AuthController : BaseController
 {
     private readonly IAuthenticationService _authenticationService;
 
-    public AuthenticationController(IAuthenticationService authenticationService)
+    public AuthController(IAuthenticationService authenticationService)
     {
         _authenticationService = authenticationService;
     }
 
-    [HttpPost]
+    [HttpPost("sign-in")]
     [AllowAnonymous]
     [SwaggerOperation("Login api")]
     public async Task<ApiResponse<AuthDto>> SignIn(AccountCredentialLoginDto accountCredentialLoginDto)
