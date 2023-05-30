@@ -13,10 +13,10 @@ public class Post : BaseEntity
     public string? Image { get; set; }
     
     //Relationship
-    public virtual Group Group { get; set; } = new Group();
     public virtual IEnumerable<Comment> Comments { get; set; } = new List<Comment>();
     public virtual IEnumerable<Like> Likes { get; set; } = new List<Like>();
     public virtual IEnumerable<Report> Reports { get; set; } = new List<Report>();
+    public virtual User User { get; set; } = new User();
 }
 
 public class PostConfig : IEntityTypeConfiguration<Post>
@@ -29,9 +29,6 @@ public class PostConfig : IEntityTypeConfiguration<Post>
         builder.Property(x => x.Content).IsRequired();
         
         //Relationship
-        builder.HasOne(x => x.Group)
-            .WithMany(x => x.Posts)
-            .HasForeignKey(x => x.GroupId);
         
         builder.HasMany(x => x.Comments)
             .WithOne(x => x.Post)
@@ -45,5 +42,9 @@ public class PostConfig : IEntityTypeConfiguration<Post>
             .WithOne(x => x.Post)
             .HasForeignKey(x => x.TargetId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.User)
+            .WithMany(x => x.Posts)
+            .HasForeignKey(x => x.CreatorId);
     }
 }

@@ -19,12 +19,12 @@ public class User : BaseEntity
 
     //Relationship
     public virtual IEnumerable<Token> Tokens { get; set; } = new List<Token>();
-    public virtual IEnumerable<GroupMember> GroupMembers { get; set; } = new List<GroupMember>();
     public virtual IEnumerable<Notification> Notifications { get; set; } = new List<Notification>();
     public virtual IEnumerable<Comment> Comments { get; set; } = new List<Comment>();
     public virtual IEnumerable<Like> Likes { get; set; } = new List<Like>();
     public virtual IEnumerable<Report> Reports { get; set; } = new List<Report>();
     public virtual IEnumerable<Participant> Participants { get; set; } = new List<Participant>();
+    public virtual IEnumerable<Post> Posts { get; set; } = new List<Post>();
 }
 
 public enum UserRole
@@ -55,11 +55,7 @@ public class UserConfig : IEntityTypeConfiguration<User>
         builder.HasMany(u => u.Tokens)
             .WithOne()
             .HasForeignKey(t => t.UserId);;
-        
-        builder.HasMany(u => u.GroupMembers)
-            .WithOne(x => x.User)
-            .HasForeignKey(t => t.UserId);
-        
+
         builder.HasMany(u => u.Notifications)
             .WithOne(x => x.User)
             .HasForeignKey(t => t.UserId);
@@ -79,5 +75,10 @@ public class UserConfig : IEntityTypeConfiguration<User>
         builder.HasMany(u => u.Participants)
             .WithOne(x => x.User)
             .HasForeignKey(t => t.CreatorId);
+        
+        builder.HasMany(u => u.Posts)
+            .WithOne(x => x.User)
+            .HasForeignKey(t => t.CreatorId);
+        
     }
 }
