@@ -63,25 +63,6 @@ namespace MainData.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Groups",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GroupName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CoverImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    EditorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Groups", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "News",
                 columns: table => new
                 {
@@ -127,63 +108,6 @@ namespace MainData.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Post",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Tittle = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    EditorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Post", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Post_Groups_GroupId",
-                        column: x => x.GroupId,
-                        principalTable: "Groups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "GroupMembers",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Role = table.Column<int>(type: "int", nullable: false),
-                    CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    EditorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GroupMembers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_GroupMembers_Groups_GroupId",
-                        column: x => x.GroupId,
-                        principalTable: "Groups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_GroupMembers_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -244,6 +168,31 @@ namespace MainData.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Post",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Tittle = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    EditorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Post", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Post_Users_CreatorId",
+                        column: x => x.CreatorId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tokens",
                 columns: table => new
                 {
@@ -270,36 +219,6 @@ namespace MainData.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Comments",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ReplyTo = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    EditorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Comments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Comments_Post_PostId",
-                        column: x => x.PostId,
-                        principalTable: "Post",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Comments_Users_CreatorId",
-                        column: x => x.CreatorId,
-                        principalTable: "Users",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -332,6 +251,36 @@ namespace MainData.Migrations
                         principalTable: "Participants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Comments",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReplyTo = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    EditorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Comments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Comments_Post_PostId",
+                        column: x => x.PostId,
+                        principalTable: "Post",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Comments_Users_CreatorId",
+                        column: x => x.CreatorId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -424,16 +373,6 @@ namespace MainData.Migrations
                 column: "ParticipantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GroupMembers_GroupId",
-                table: "GroupMembers",
-                column: "GroupId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_GroupMembers_UserId",
-                table: "GroupMembers",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Likes_CreatorId",
                 table: "Likes",
                 column: "CreatorId");
@@ -459,9 +398,9 @@ namespace MainData.Migrations
                 column: "EventId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Post_GroupId",
+                name: "IX_Post_CreatorId",
                 table: "Post",
-                column: "GroupId");
+                column: "CreatorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reports_CreatorId",
@@ -487,9 +426,6 @@ namespace MainData.Migrations
 
             migrationBuilder.DropTable(
                 name: "FeedBacks");
-
-            migrationBuilder.DropTable(
-                name: "GroupMembers");
 
             migrationBuilder.DropTable(
                 name: "Likes");
@@ -520,9 +456,6 @@ namespace MainData.Migrations
 
             migrationBuilder.DropTable(
                 name: "Users");
-
-            migrationBuilder.DropTable(
-                name: "Groups");
         }
     }
 }
