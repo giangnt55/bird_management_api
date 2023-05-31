@@ -1,4 +1,5 @@
-﻿using AppCore.Data;
+﻿using System.Security.Cryptography.X509Certificates;
+using AppCore.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -6,30 +7,44 @@ namespace MainData.Entities;
 
 public class Post : BaseEntity
 {
-    public string Title { get; set; } = string.Empty;
+    public Guid GroupId { get; set; }
+    public string? Tittle { get; set; }
     public string Content { get; set; } = string.Empty;
-    public string? Image { get; set; } = string.Empty;
-    public int Like { get; set; }
-    public Guid? ActivityId { get; set; }
+    public string? Image { get; set; }
     
     //Relationship
-    public virtual User Creator { get; set; } = new User();
-    public virtual Activity Activity { get; set; } = new Activity();
-    public virtual IEnumerable<Interaction> Interactions { get; set; } = new List<Interaction>();
+    public virtual IEnumerable<Comment> Comments { get; set; } = new List<Comment>();
+    public virtual IEnumerable<Like> Likes { get; set; } = new List<Like>();
+    public virtual IEnumerable<Report> Reports { get; set; } = new List<Report>();
+    public virtual User User { get; set; } = new User();
 }
 
 public class PostConfig : IEntityTypeConfiguration<Post>
 {
     public void Configure(EntityTypeBuilder<Post> builder)
     {
-        builder.Property(x => x.Title).IsRequired();
+        builder.Property(x => x.GroupId).IsRequired();
+        builder.Property(x => x.Image).IsRequired(false);
+        builder.Property(x => x.Tittle).IsRequired(false);
         builder.Property(x => x.Content).IsRequired();
-        builder.Property(x => x.Image).IsRequired();
-        builder.Property(x => x.Like).IsRequired();
-        builder.Property(x => x.ActivityId).IsRequired(false);
-        builder.HasOne(x => x.Creator);
-        builder.HasOne(x => x.Activity);
-        builder.HasMany(x => x.Interactions).WithOne(x => x.Post)
+        
+        //Relationship
+        
+        builder.HasMany(x => x.Comments)
+            .WithOne(x => x.Post)
             .HasForeignKey(x => x.PostId);
+        
+        builder.HasMany(x => x.Likes)
+            .WithOne(x => x.Post)
+            .HasForeignKey(x => x.TargetId);
+        
+        builder.HasMany(x => x.Reports)
+            .WithOne(x => x.Post)
+            .HasForeignKey(x => x.TargetId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.User)
+            .WithMany(x => x.Posts)
+            .HasForeignKey(x => x.CreatorId);
     }
 }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MainData.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20230519212913_v8")]
-    partial class v8
+    [Migration("20230530140248_u1")]
+    partial class u1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,187 +25,20 @@ namespace MainData.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("MainData.Entities.Activity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Location")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("MaxParticipants")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatorId");
-
-                    b.ToTable("Activities");
-                });
-
-            modelBuilder.Entity("MainData.Entities.ActivityFeedBack", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ActivityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("Rating")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActivityId");
-
-                    b.HasIndex("CreatorId");
-
-                    b.ToTable("ActivityFeedBacks");
-                });
-
-            modelBuilder.Entity("MainData.Entities.Article", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CoverImage")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatorId")
-                        .IsRequired()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatorId");
-
-                    b.ToTable("Articles");
-                });
-
-            modelBuilder.Entity("MainData.Entities.Attendance", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ActivityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("CheckIn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("CheckOut")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActivityId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Attendances");
-                });
-
             modelBuilder.Entity("MainData.Entities.Bird", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AvgLifeSize")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<float?>("AvgLifeSize")
+                        .HasColumnType("real");
 
-                    b.Property<string>("AvgLifespan")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<float?>("AvgLifeSpan")
+                        .HasColumnType("real");
 
-                    b.Property<double>("AvgPrice")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValue(0.0);
+                    b.Property<int>("Conservation")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -218,6 +51,9 @@ namespace MainData.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("EditorId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Habitat")
                         .HasColumnType("nvarchar(max)");
@@ -229,24 +65,23 @@ namespace MainData.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("SpeciesId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SpeciesId");
-
                     b.ToTable("Birds");
                 });
 
-            modelBuilder.Entity("MainData.Entities.ChatGroup", b =>
+            modelBuilder.Entity("MainData.Entities.Comment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -257,7 +92,161 @@ namespace MainData.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Name")
+                    b.Property<Guid?>("EditorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ReplyTo")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("MainData.Entities.Event", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CoverImage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("EditorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EvaluationStrategy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EventName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MaxParticipants")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinParticipants")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Prerequisite")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Events");
+                });
+
+            modelBuilder.Entity("MainData.Entities.FeedBack", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("EditorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ParticipantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("ParticipantId");
+
+                    b.ToTable("FeedBacks");
+                });
+
+            modelBuilder.Entity("MainData.Entities.Group", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CoverImage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("EditorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("GroupName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -266,16 +255,13 @@ namespace MainData.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ChatGroups");
+                    b.ToTable("Groups");
                 });
 
-            modelBuilder.Entity("MainData.Entities.ChatGroupMember", b =>
+            modelBuilder.Entity("MainData.Entities.GroupMember", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ChatGroupId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -286,6 +272,12 @@ namespace MainData.Migrations
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("EditorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("GroupId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Role")
                         .HasColumnType("int");
@@ -298,25 +290,18 @@ namespace MainData.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChatGroupId");
+                    b.HasIndex("GroupId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ChatGroupMembers");
+                    b.ToTable("GroupMembers");
                 });
 
-            modelBuilder.Entity("MainData.Entities.ChatMessage", b =>
+            modelBuilder.Entity("MainData.Entities.Like", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ChatGroupId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -327,31 +312,39 @@ namespace MainData.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("SenderId")
+                    b.Property<Guid?>("EditorId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<Guid>("TargetId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChatGroupId");
+                    b.HasIndex("CreatorId");
 
-                    b.HasIndex("SenderId");
+                    b.HasIndex("TargetId");
 
-                    b.ToTable("ChatMessages");
+                    b.ToTable("Likes");
                 });
 
-            modelBuilder.Entity("MainData.Entities.Interaction", b =>
+            modelBuilder.Entity("MainData.Entities.News", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CoverImage")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -363,8 +356,15 @@ namespace MainData.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("PostId")
+                    b.Property<Guid?>("EditorId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("PublishDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -374,11 +374,7 @@ namespace MainData.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatorId");
-
-                    b.HasIndex("PostId");
-
-                    b.ToTable("Interactions");
+                    b.ToTable("News");
                 });
 
             modelBuilder.Entity("MainData.Entities.Notification", b =>
@@ -397,24 +393,20 @@ namespace MainData.Migrations
                     b.Property<Guid?>("CreatorId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsSendAll")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
+                    b.Property<Guid?>("EditorId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("PublishAt")
-                        .IsRequired()
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ReadAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -422,10 +414,8 @@ namespace MainData.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValue(new Guid("00000000-0000-0000-0000-000000000000"));
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -434,13 +424,46 @@ namespace MainData.Migrations
                     b.ToTable("Notifications");
                 });
 
-            modelBuilder.Entity("MainData.Entities.Post", b =>
+            modelBuilder.Entity("MainData.Entities.Participant", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ActivityId")
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("EditorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("EventId");
+
+                    b.ToTable("Participants");
+                });
+
+            modelBuilder.Entity("MainData.Entities.Post", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Content")
@@ -451,21 +474,21 @@ namespace MainData.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CreatorId")
-                        .IsRequired()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("EditorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("GroupId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Image")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Like")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
+                    b.Property<string>("Tittle")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -473,24 +496,16 @@ namespace MainData.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActivityId");
+                    b.HasIndex("GroupId");
 
-                    b.HasIndex("CreatorId");
-
-                    b.ToTable("Posts");
+                    b.ToTable("Post");
                 });
 
-            modelBuilder.Entity("MainData.Entities.Species", b =>
+            modelBuilder.Entity("MainData.Entities.Report", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CommonName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Conservation")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -501,22 +516,25 @@ namespace MainData.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid?>("EditorId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("TargetId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ScientificName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Species");
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("TargetId");
+
+                    b.ToTable("Reports");
                 });
 
             modelBuilder.Entity("MainData.Entities.Token", b =>
@@ -540,6 +558,9 @@ namespace MainData.Migrations
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("EditorId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("RefreshExpiredAt")
                         .HasColumnType("datetime2");
@@ -589,6 +610,9 @@ namespace MainData.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("EditorId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
@@ -625,120 +649,80 @@ namespace MainData.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("MainData.Entities.Activity", b =>
-                {
-                    b.HasOne("MainData.Entities.User", "Host")
-                        .WithMany("Activities")
-                        .HasForeignKey("CreatorId");
-
-                    b.Navigation("Host");
-                });
-
-            modelBuilder.Entity("MainData.Entities.ActivityFeedBack", b =>
-                {
-                    b.HasOne("MainData.Entities.Activity", "Activity")
-                        .WithMany("ActivityFeedBacks")
-                        .HasForeignKey("ActivityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MainData.Entities.User", "User")
-                        .WithMany("ActivityFeedBacks")
-                        .HasForeignKey("CreatorId");
-
-                    b.Navigation("Activity");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("MainData.Entities.Article", b =>
-                {
-                    b.HasOne("MainData.Entities.User", "Creator")
-                        .WithMany("Articles")
-                        .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Creator");
-                });
-
-            modelBuilder.Entity("MainData.Entities.Attendance", b =>
-                {
-                    b.HasOne("MainData.Entities.Activity", "Activity")
-                        .WithMany("Attendances")
-                        .HasForeignKey("ActivityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MainData.Entities.User", "User")
-                        .WithMany("Attendances")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Activity");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("MainData.Entities.Bird", b =>
-                {
-                    b.HasOne("MainData.Entities.Species", null)
-                        .WithMany("Birds")
-                        .HasForeignKey("SpeciesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("MainData.Entities.ChatGroupMember", b =>
-                {
-                    b.HasOne("MainData.Entities.ChatGroup", "ChatGroup")
-                        .WithMany("ChatGroupMembers")
-                        .HasForeignKey("ChatGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MainData.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ChatGroup");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("MainData.Entities.ChatMessage", b =>
-                {
-                    b.HasOne("MainData.Entities.ChatGroup", "ChatGroup")
-                        .WithMany("ChatMessages")
-                        .HasForeignKey("ChatGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MainData.Entities.User", "Sender")
-                        .WithMany()
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ChatGroup");
-
-                    b.Navigation("Sender");
-                });
-
-            modelBuilder.Entity("MainData.Entities.Interaction", b =>
+            modelBuilder.Entity("MainData.Entities.Comment", b =>
                 {
                     b.HasOne("MainData.Entities.User", "User")
-                        .WithMany("Interactions")
+                        .WithMany("Comments")
                         .HasForeignKey("CreatorId");
 
                     b.HasOne("MainData.Entities.Post", "Post")
-                        .WithMany("Interactions")
+                        .WithMany("Comments")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MainData.Entities.FeedBack", b =>
+                {
+                    b.HasOne("MainData.Entities.Event", "Event")
+                        .WithMany("FeedBacks")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MainData.Entities.Participant", "Participant")
+                        .WithMany("FeedBacks")
+                        .HasForeignKey("ParticipantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("Participant");
+                });
+
+            modelBuilder.Entity("MainData.Entities.GroupMember", b =>
+                {
+                    b.HasOne("MainData.Entities.Group", "Group")
+                        .WithMany("GroupMembers")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MainData.Entities.User", "User")
+                        .WithMany("GroupMembers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Group");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MainData.Entities.Like", b =>
+                {
+                    b.HasOne("MainData.Entities.User", "User")
+                        .WithMany("Likes")
+                        .HasForeignKey("CreatorId");
+
+                    b.HasOne("MainData.Entities.Comment", "Comment")
+                        .WithMany("Likes")
+                        .HasForeignKey("TargetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MainData.Entities.Post", "Post")
+                        .WithMany("Likes")
+                        .HasForeignKey("TargetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Comment");
 
                     b.Navigation("Post");
 
@@ -749,26 +733,64 @@ namespace MainData.Migrations
                 {
                     b.HasOne("MainData.Entities.User", "User")
                         .WithMany("Notifications")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MainData.Entities.Participant", b =>
+                {
+                    b.HasOne("MainData.Entities.User", "User")
+                        .WithMany("Participants")
+                        .HasForeignKey("CreatorId");
+
+                    b.HasOne("MainData.Entities.Event", "Event")
+                        .WithMany("Participants")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("MainData.Entities.Post", b =>
                 {
-                    b.HasOne("MainData.Entities.Activity", "Activity")
+                    b.HasOne("MainData.Entities.Group", "Group")
                         .WithMany("Posts")
-                        .HasForeignKey("ActivityId");
-
-                    b.HasOne("MainData.Entities.User", "Creator")
-                        .WithMany("Posts")
-                        .HasForeignKey("CreatorId")
+                        .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Activity");
+                    b.Navigation("Group");
+                });
 
-                    b.Navigation("Creator");
+            modelBuilder.Entity("MainData.Entities.Report", b =>
+                {
+                    b.HasOne("MainData.Entities.User", "User")
+                        .WithMany("Reports")
+                        .HasForeignKey("CreatorId");
+
+                    b.HasOne("MainData.Entities.Comment", "Comment")
+                        .WithMany("Reports")
+                        .HasForeignKey("TargetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MainData.Entities.Post", "Post")
+                        .WithMany("Reports")
+                        .HasForeignKey("TargetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Comment");
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("MainData.Entities.Token", b =>
@@ -780,47 +802,54 @@ namespace MainData.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MainData.Entities.Activity", b =>
+            modelBuilder.Entity("MainData.Entities.Comment", b =>
                 {
-                    b.Navigation("ActivityFeedBacks");
+                    b.Navigation("Likes");
 
-                    b.Navigation("Attendances");
+                    b.Navigation("Reports");
+                });
+
+            modelBuilder.Entity("MainData.Entities.Event", b =>
+                {
+                    b.Navigation("FeedBacks");
+
+                    b.Navigation("Participants");
+                });
+
+            modelBuilder.Entity("MainData.Entities.Group", b =>
+                {
+                    b.Navigation("GroupMembers");
 
                     b.Navigation("Posts");
                 });
 
-            modelBuilder.Entity("MainData.Entities.ChatGroup", b =>
+            modelBuilder.Entity("MainData.Entities.Participant", b =>
                 {
-                    b.Navigation("ChatGroupMembers");
-
-                    b.Navigation("ChatMessages");
+                    b.Navigation("FeedBacks");
                 });
 
             modelBuilder.Entity("MainData.Entities.Post", b =>
                 {
-                    b.Navigation("Interactions");
-                });
+                    b.Navigation("Comments");
 
-            modelBuilder.Entity("MainData.Entities.Species", b =>
-                {
-                    b.Navigation("Birds");
+                    b.Navigation("Likes");
+
+                    b.Navigation("Reports");
                 });
 
             modelBuilder.Entity("MainData.Entities.User", b =>
                 {
-                    b.Navigation("Activities");
+                    b.Navigation("Comments");
 
-                    b.Navigation("ActivityFeedBacks");
+                    b.Navigation("GroupMembers");
 
-                    b.Navigation("Articles");
-
-                    b.Navigation("Attendances");
-
-                    b.Navigation("Interactions");
+                    b.Navigation("Likes");
 
                     b.Navigation("Notifications");
 
-                    b.Navigation("Posts");
+                    b.Navigation("Participants");
+
+                    b.Navigation("Reports");
 
                     b.Navigation("Tokens");
                 });

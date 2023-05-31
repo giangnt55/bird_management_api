@@ -11,34 +11,30 @@ public class DatabaseContext : DbContext
     
     public DbSet<User> Users { set; get; }
     public DbSet<Token> Tokens { set; get; }
-    public DbSet<Species> Species { set; get; }
+    public DbSet<Post> Post { set; get; }
+    public DbSet<News> News { set; get; }
     public DbSet<Bird> Birds { set; get; }
+    public DbSet<Comment> Comments { set; get; }
+    public DbSet<Like> Likes { set; get; }
     public DbSet<Notification> Notifications { set; get; }
-    public DbSet<Article> Articles { set; get; }
-    public DbSet<ChatGroup> ChatGroups { set; get; }
-    public DbSet<ChatGroupMember> ChatGroupMembers { set; get; }
-    public DbSet<ChatMessage> ChatMessages { set; get; }
-    public DbSet<Activity> Activities { set; get; }
-    public DbSet<ActivityFeedBack> ActivityFeedBacks { set; get; }
-    public DbSet<Attendance> Attendances { set; get; }
-    public DbSet<Interaction> Interactions { set; get; }
-    public DbSet<Post> Posts { set; get; }
+    public DbSet<Event> Events { set; get; }
+    public DbSet<Participant> Participants { set; get; }
+    public DbSet<FeedBack> FeedBacks { set; get; }
+    public DbSet<Report> Reports { set; get; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new UserConfig());
         modelBuilder.ApplyConfiguration(new TokenConfig());
-        modelBuilder.ApplyConfiguration(new SpeciesConfig());
-        modelBuilder.ApplyConfiguration(new BirdConfig());
-        modelBuilder.ApplyConfiguration(new NotificationConfig());
-        modelBuilder.ApplyConfiguration(new ArticleConfig());
-        modelBuilder.ApplyConfiguration(new ChatGroupConfig());
-        modelBuilder.ApplyConfiguration(new ChatMessageConfig());
-        modelBuilder.ApplyConfiguration(new ChatGroupMemberConfig());
-        modelBuilder.ApplyConfiguration(new ActivityConfig());
-        modelBuilder.ApplyConfiguration(new ActivityFeedBackConfig());
-        modelBuilder.ApplyConfiguration(new AttendanceConfig());
-        modelBuilder.ApplyConfiguration(new InteractionConfig());
         modelBuilder.ApplyConfiguration(new PostConfig());
+        modelBuilder.ApplyConfiguration(new NewsConfig());
+        modelBuilder.ApplyConfiguration(new BirdConfig());
+        modelBuilder.ApplyConfiguration(new CommentConfig());
+        modelBuilder.ApplyConfiguration(new LikeConfig());
+        modelBuilder.ApplyConfiguration(new NotificationConfig());
+        modelBuilder.ApplyConfiguration(new EventConfig());
+        modelBuilder.ApplyConfiguration(new ParticipantConfig());
+        modelBuilder.ApplyConfiguration(new FeedBackConfig());
+        modelBuilder.ApplyConfiguration(new ReportConfig());
     }
 }
