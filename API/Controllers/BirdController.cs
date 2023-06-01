@@ -29,7 +29,7 @@ public class BirdController : BaseController
         return await _birdService.InsertBird(birdDto);
     }
 
-    [HttpPatch]
+    [HttpPut]
     [SwaggerOperation("Update ...")]
     public async Task<ApiResponse<bool>> UpdateBird(BirdUpdateDto birdDto)
     {

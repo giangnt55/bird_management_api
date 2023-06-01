@@ -94,15 +94,17 @@ public class BirdService : BaseService, IBirdService
             return (ApiResponse<bool>)ApiResponse<bool>.Failed();
         }
 
-        existingBird.Name = birdDto.Name;
-        existingBird.Image = birdDto.Image;
-        existingBird.Description = birdDto.Description;
-        existingBird.Habitat = birdDto.Habitat;
-        existingBird.AvgLifeSpan = birdDto.AvgLifeSpan;
-        existingBird.AvgLifeSize = birdDto.AvgLifeSize;
+        var bird = existingBird;
+
+        existingBird.Name = birdDto.Name ?? existingBird.Name;
+        existingBird.Image = birdDto.Image ?? existingBird.Image;
+        existingBird.Description = birdDto.Description ?? existingBird.Description;
+        existingBird.Habitat = birdDto.Habitat ?? existingBird.Habitat;
+        existingBird.AvgLifeSpan = birdDto.AvgLifeSpan ?? existingBird.AvgLifeSpan;
+        existingBird.AvgLifeSize = birdDto.AvgLifeSize ?? existingBird.AvgLifeSize;
         existingBird.Conservation = birdDto.Conservation;
 
-        bool isUpdated = await MainUnitOfWork.BirdRepository.UpdateAsync(existingBird, AccountId);
+        bool isUpdated = await MainUnitOfWork.BirdRepository.UpdateAsync(bird, AccountId);
 
         if (isUpdated)
         {

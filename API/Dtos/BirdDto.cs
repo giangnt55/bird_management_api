@@ -56,7 +56,7 @@ public class BirdCreateDto : BaseDto
     public Conservation Conservation { get; set; }
 }
 
-public class BirdDeleteDto : BaseDto
+public class BirdDeleteDto
 {
     public Guid Id { get; set; }
 }
