@@ -23,8 +23,6 @@ public class BirdDetailDto : BaseDto
     public float? AvgLifeSpan { get; set; }
     public float? AvgLifeSize { get; set; }
     public Conservation Conservation { get; set; }
-    
-    
 }
 
 public class BirdQueryDto : BaseQueryDto
