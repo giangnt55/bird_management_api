@@ -5,6 +5,7 @@ using AppCore.Models;
 using MainData;
 using MainData.Entities;
 using AppCore.Extensions;
+using MainData.Repositories;
 
 namespace API.Services;
 
@@ -15,10 +16,9 @@ public interface IAuthenticationService : IBaseService
 
 public class AuthenticationService : BaseService, IAuthenticationService
 {
-    public AuthenticationService(MainUnitOfWork mainUnitOfWork, IHttpContextAccessor httpContextAccessor) : base(mainUnitOfWork, httpContextAccessor)
+    public AuthenticationService(MainUnitOfWork mainUnitOfWork, IHttpContextAccessor httpContextAccessor, IMapperRepository mapperRepository) : base(mainUnitOfWork, httpContextAccessor, mapperRepository)
     {
     }
-
     public async Task<ApiResponse<AuthDto>> SignIn(AccountCredentialLoginDto accountCredentialLoginDto)
     {
         var user = await MainUnitOfWork.UserRepository.FindOneAsync(new Expression<Func<User, bool>>[]
@@ -89,4 +89,5 @@ public class AuthenticationService : BaseService, IAuthenticationService
         }.ToList();
         return claims;
     }
+    
 }
