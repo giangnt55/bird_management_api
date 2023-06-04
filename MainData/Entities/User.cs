@@ -18,13 +18,13 @@ public class User : BaseEntity
     public string? Salt { get; set; }
 
     //Relationship
-    public virtual IEnumerable<Token> Tokens { get; set; } = new List<Token>();
-    public virtual IEnumerable<Notification> Notifications { get; set; } = new List<Notification>();
-    public virtual IEnumerable<Comment> Comments { get; set; } = new List<Comment>();
-    public virtual IEnumerable<Like> Likes { get; set; } = new List<Like>();
-    public virtual IEnumerable<Report> Reports { get; set; } = new List<Report>();
-    public virtual IEnumerable<Participant> Participants { get; set; } = new List<Participant>();
-    public virtual IEnumerable<Post> Posts { get; set; } = new List<Post>();
+    public virtual IEnumerable<Token>? Tokens { get; set; }
+    public virtual IEnumerable<Notification>? Notifications { get; set; } 
+    public virtual IEnumerable<Comment>? Comments { get; set; }
+    public virtual IEnumerable<Like>? Likes { get; set; } 
+    public virtual IEnumerable<Report>? Reports { get; set; } 
+    public virtual IEnumerable<Participant>? Participants { get; set; } 
+    public virtual IEnumerable<Post>? Posts { get; set; } 
 }
 
 public enum UserRole

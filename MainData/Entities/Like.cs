@@ -11,7 +11,7 @@ public class Like : BaseEntity
     //Relationship
     public virtual Post? Post { get; set; }
     public virtual Comment? Comment { get; set; }
-    public virtual User User { get; set; } = new User();
+    public virtual User? User { get; set; }
 }
 
 public class LikeConfig : IEntityTypeConfiguration<Like>

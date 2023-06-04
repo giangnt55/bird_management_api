@@ -67,7 +67,7 @@ namespace MainData.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Birds", (string)null);
+                    b.ToTable("Birds");
                 });
 
             modelBuilder.Entity("MainData.Entities.Comment", b =>
@@ -107,7 +107,7 @@ namespace MainData.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("Comments", (string)null);
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("MainData.Entities.Event", b =>
@@ -174,7 +174,7 @@ namespace MainData.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Events", (string)null);
+                    b.ToTable("Events");
                 });
 
             modelBuilder.Entity("MainData.Entities.FeedBack", b =>
@@ -216,7 +216,7 @@ namespace MainData.Migrations
 
                     b.HasIndex("ParticipantId");
 
-                    b.ToTable("FeedBacks", (string)null);
+                    b.ToTable("FeedBacks");
                 });
 
             modelBuilder.Entity("MainData.Entities.Like", b =>
@@ -249,7 +249,7 @@ namespace MainData.Migrations
 
                     b.HasIndex("TargetId");
 
-                    b.ToTable("Likes", (string)null);
+                    b.ToTable("Likes");
                 });
 
             modelBuilder.Entity("MainData.Entities.News", b =>
@@ -296,7 +296,7 @@ namespace MainData.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("News", (string)null);
+                    b.ToTable("News");
                 });
 
             modelBuilder.Entity("MainData.Entities.Notification", b =>
@@ -343,7 +343,7 @@ namespace MainData.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notifications", (string)null);
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("MainData.Entities.Participant", b =>
@@ -379,7 +379,7 @@ namespace MainData.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.ToTable("Participants", (string)null);
+                    b.ToTable("Participants");
                 });
 
             modelBuilder.Entity("MainData.Entities.Post", b =>
@@ -404,9 +404,6 @@ namespace MainData.Migrations
                     b.Property<Guid?>("EditorId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("GroupId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Image")
                         .HasColumnType("nvarchar(max)");
 
@@ -420,7 +417,7 @@ namespace MainData.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("Post", (string)null);
+                    b.ToTable("Post");
                 });
 
             modelBuilder.Entity("MainData.Entities.Report", b =>
@@ -456,7 +453,7 @@ namespace MainData.Migrations
 
                     b.HasIndex("TargetId");
 
-                    b.ToTable("Reports", (string)null);
+                    b.ToTable("Reports");
                 });
 
             modelBuilder.Entity("MainData.Entities.Token", b =>
@@ -508,7 +505,7 @@ namespace MainData.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Tokens", (string)null);
+                    b.ToTable("Tokens");
                 });
 
             modelBuilder.Entity("MainData.Entities.User", b =>
@@ -568,7 +565,7 @@ namespace MainData.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("MainData.Entities.Comment", b =>

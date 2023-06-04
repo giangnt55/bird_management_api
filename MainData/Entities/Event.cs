@@ -21,8 +21,8 @@ public class Event : BaseEntity
     public string EvaluationStrategy { get; set; } = string.Empty;
     
     //Relationship
-    public virtual IEnumerable<Participant> Participants { get; set; } = new List<Participant>();
-    public virtual IEnumerable<FeedBack> FeedBacks { get; set; } = new List<FeedBack>();
+    public virtual IEnumerable<Participant>? Participants { get; set; }
+    public virtual IEnumerable<FeedBack>? FeedBacks { get; set; }
 }
 
 public enum EventType
