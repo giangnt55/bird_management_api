@@ -23,4 +23,26 @@ public class AuthController : BaseController
     {
         return await _authenticationService.SignIn(accountCredentialLoginDto);
     }
+    
+    [HttpPost("sign-out")]
+    public async Task<ApiResponse> Logout()
+    {
+        return await _authenticationService.RevokeToken();
+    }
+    
+    [HttpPost("refresh-token")]
+    [AllowAnonymous]
+    [SwaggerOperation("Refresh token")]
+    public async Task<ApiResponse<AuthDto>> SignIn(AuthRefreshDto authRefreshDto)
+    {
+        return await _authenticationService.RefreshToken(authRefreshDto);
+    }
+    
+    [HttpPost("register")]
+    [AllowAnonymous]
+    [SwaggerOperation("Register account")]
+    public async Task<ApiResponse> Register(RegisterDto registerDto)
+    {
+        return await _authenticationService.Register(registerDto);
+    }
 }
