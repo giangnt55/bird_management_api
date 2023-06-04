@@ -3,6 +3,7 @@ using API.Dtos;
 using AppCore.Models;
 using MainData;
 using MainData.Entities;
+using MainData.Repositories;
 
 namespace API.Services;
 
@@ -18,10 +19,9 @@ public interface IBirdService : IBaseService
 
 public class BirdService : BaseService, IBirdService
 {
-    public BirdService(MainUnitOfWork mainUnitOfWork, IHttpContextAccessor httpContextAccessor) : base(mainUnitOfWork, httpContextAccessor)
+    public BirdService(MainUnitOfWork mainUnitOfWork, IHttpContextAccessor httpContextAccessor, IMapperRepository mapperRepository) : base(mainUnitOfWork, httpContextAccessor, mapperRepository)
     {
     }
-
     public async Task<ApiResponse<bool>> DeleteBird(BirdDeleteDto birdDto)
     {
         var existingBird = await MainUnitOfWork.BirdRepository.FindOneAsync(birdDto.Id);
@@ -115,4 +115,6 @@ public class BirdService : BaseService, IBirdService
             return (ApiResponse<bool>)ApiResponse<bool>.Failed();
         }
     }
+
+   
 }
