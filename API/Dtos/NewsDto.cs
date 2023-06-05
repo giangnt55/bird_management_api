@@ -13,7 +13,7 @@ namespace API.Dtos
         public string Author { get; set; } = string.Empty;
     }
 
-    public class NewsCreateDto : BaseDto
+    public class NewsCreateDto
     {
         public Guid Id { get; set; }
         public string Title { get; set; } = string.Empty;
@@ -24,7 +24,7 @@ namespace API.Dtos
         public string Author { get; set; } = string.Empty;
     }
 
-    public class NewsUpdateDto : BaseDto
+    public class NewsUpdateDto
     {
         public string Title { get; set; } = string.Empty;
         public NewsType Type { get; set; }
@@ -34,7 +34,7 @@ namespace API.Dtos
         public string Author { get; set; } = string.Empty;
     }
 
-    public class NewsDeleteDto
+    public class GetNewsDto
     {
         public Guid Id { get; set; }
     }
@@ -43,4 +43,6 @@ namespace API.Dtos
     {
         public string? Title { get; set; }
     }
+
+
 }

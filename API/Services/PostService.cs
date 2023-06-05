@@ -6,11 +6,11 @@ using System.Linq.Expressions;
 
 namespace API.Services
 {
-    public interface IPostService : IBaseService 
+    public interface IPostService : IBaseService
     {
-        Task<ApiResponses<Post>> GetPosts();
-        Task<ApiResponse<bool>> InsertPost(PostCreateDto postDto);
-        Task<ApiResponse<bool>> DeletePost(PostDeleteDto postDto);
+        Task<ApiResponses<PostDto>> GetPosts(PostQueryDto postDto);
+        Task<ApiResponse<Post>> InsertPost(PostCreateDto postDto);
+        Task<ApiResponse> DeletePost(PostDeleteDto postDto);
     }
 
     public class PostService : BaseService, IPostService
@@ -19,35 +19,41 @@ namespace API.Services
         {
         }
 
-        public async Task<ApiResponse<bool>> DeletePost(PostDeleteDto postDto)
+        public async Task<ApiResponse> DeletePost(PostDeleteDto postDto)
         {
             var existingPost = await MainUnitOfWork.PostRepository.FindOneAsync(postDto.Id);
             if (existingPost != null)
             {
-                return (ApiResponse<bool>)ApiResponse<bool>.Failed();
+                return ApiResponse.Failed();
             }
 
             bool isDeleted = await MainUnitOfWork.PostRepository.DeleteAsync(existingPost, AccountId);
 
             if (isDeleted)
             {
-                return ApiResponse<bool>.Success(true);
+                return ApiResponse.Success("Successfully");
             }
             else
             {
-                return (ApiResponse<bool>)ApiResponse<bool>.Failed();
+                return ApiResponse.Failed();
             }
         }
 
-        public async Task<ApiResponses<Post>> GetPosts()
+        public async Task<ApiResponses<PostDto>> GetPosts(PostQueryDto postDto)
         {
-            string orderBy = "CreatedAt desc";
-            var response = await MainUnitOfWork.PostRepository.FindAsync(null, orderBy);
+            var response = await MainUnitOfWork.PostRepository.FindResultAsync<PostDto>(new Expression<Func<Post, bool>>[]
+            {
+                x => !x.DeletedAt.HasValue
+            }, postDto.OrderBy, postDto.Skip(), postDto.PageSize);
 
-            return ApiResponses<Post>.Success(response);
+            return ApiResponses<PostDto>.Success(response.Items,
+                response.TotalCount,
+                postDto.PageSize,
+                postDto.Skip(),
+                (int)Math.Ceiling(response.TotalCount / (double)postDto.PageSize));
         }
 
-        public async Task<ApiResponse<bool>> InsertPost(PostCreateDto postDto)
+        public async Task<ApiResponse<Post>> InsertPost(PostCreateDto postDto)
         {
             var post = new Post
             {
@@ -62,11 +68,11 @@ namespace API.Services
 
             if (response)
             {
-                return ApiResponse<bool>.Success(true);
+                return ApiResponse<Post>.Success(post);
             }
             else
             {
-                return (ApiResponse<bool>)ApiResponse.Failed();
+                return (ApiResponse<Post>)ApiResponse.Failed();
             }
         }
     }

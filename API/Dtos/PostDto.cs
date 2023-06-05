@@ -1,5 +1,4 @@
 ﻿using AppCore.Models;
-using MainData.Entities;
 
 namespace API.Dtos
 {
@@ -13,5 +12,16 @@ namespace API.Dtos
     public class PostDeleteDto
     {
         public Guid Id { get; set; }
+    }
+
+    public class PostDto : BaseQueryDto
+    {
+        public string? Tittle { get; set; }
+        public string Content { get; set; } = string.Empty;
+        public string? Image { get; set; }
+    }
+
+    public class PostQueryDto : BaseQueryDto
+    {
     }
 }
