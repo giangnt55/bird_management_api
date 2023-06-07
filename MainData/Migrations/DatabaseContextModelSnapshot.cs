@@ -404,9 +404,6 @@ namespace MainData.Migrations
                     b.Property<Guid?>("EditorId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("GroupId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Image")
                         .HasColumnType("nvarchar(max)");
 

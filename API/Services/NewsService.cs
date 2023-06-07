@@ -3,6 +3,7 @@ using AppCore.Models;
 using MainData;
 using MainData.Entities;
 using System.Linq.Expressions;
+using MainData.Repositories;
 
 namespace API.Services
 {
@@ -18,7 +19,7 @@ namespace API.Services
 
     public class NewsService : BaseService, INewsService
     {
-        public NewsService(MainUnitOfWork mainUnitOfWork, IHttpContextAccessor httpContextAccessor) : base(mainUnitOfWork, httpContextAccessor)
+        public NewsService(MainUnitOfWork mainUnitOfWork, IHttpContextAccessor httpContextAccessor, IMapperRepository mapperRepository) : base(mainUnitOfWork, httpContextAccessor, mapperRepository)
         {
         }
 
@@ -119,5 +120,6 @@ namespace API.Services
                 return (ApiResponse<News>)ApiResponse.Failed();
             }
         }
+        
     }
 }

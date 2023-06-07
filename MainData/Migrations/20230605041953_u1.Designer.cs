@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MainData.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20230531070659_u1")]
+    [Migration("20230605041953_u1")]
     partial class u1
     {
         /// <inheritdoc />
@@ -405,9 +405,6 @@ namespace MainData.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<Guid?>("EditorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("GroupId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Image")

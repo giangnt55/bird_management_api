@@ -16,24 +16,46 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [SwaggerOperation("Get list ...")]
-        public async Task<ApiResponses<PostDto>> GetPosts(PostQueryDto postDto)
+        [SwaggerOperation("Get posts")]
+        public async Task<ApiResponses<PostDto>> GetPosts([FromQuery] PostQueryDto queryDto)
         {
-            return await _service.GetPosts(postDto);
+            return await _service.GetPosts(queryDto);
         }
 
         [HttpPost]
-        [SwaggerOperation("Insert ...")]
+        [SwaggerOperation("Create new post")]
         public async Task<ApiResponse> InsertPost(PostCreateDto postDto)
         {
-            return await _service.InsertPost(postDto);
+            return await _service.Create(postDto);
         }
 
-        [HttpDelete]
-        [SwaggerOperation("Delete ...")]
-        public async Task<ApiResponse> DeletePost(PostDeleteDto postDto)
+        [HttpGet("{id:guid}")]
+        [SwaggerOperation("Get detail post information")]
+        public async Task<ApiResponse<DetailPostDto>> Get(Guid id)
         {
-            return await _service.DeletePost(postDto);
+            return await _service.GetPost(id);
+        }
+        
+        [HttpPut("{id:guid}")]
+        [SwaggerOperation("Update post information")]
+        public async Task<ApiResponse<DetailPostDto>> Update(Guid id, PostUpdateDto postUpdateDto)
+        {
+            return await _service.Update(id, postUpdateDto);
+        }
+        
+        [HttpDelete("{id:guid}")]
+        [SwaggerOperation("Delete post")]
+        public async Task<ApiResponse> Delete(Guid id)
+        {
+            return await _service.Delete(id);
+        }
+
+        [HttpPost("like")]
+        [SwaggerOperation("Like post")]
+        public async Task<ApiResponse> LikePost(LikeDto likeDto)
+        {
+             return await _service.LikePost(likeDto);
+
         }
     }
 }

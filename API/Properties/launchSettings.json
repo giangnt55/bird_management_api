@@ -23,7 +23,7 @@
         "JWT_ACCESS_TOKEN_SECRET": "SXI3ZOFOKclSrticLeeHq81OBauR3cszI",
         "JWT_ACCESS_TOKEN_EXPIRES": "525960",
         "JWT_RESET_TOKEN_EXPIRES": "525960",
-        "CONNECTION_STRING" : "Server=localhost;Database=BirdManagement;User ID=sa;Password=12345;TrustServerCertificate=True;"
+        "CONNECTION_STRING" : "Server=localhost;Database=BirdManagement;User ID=sa;Password=123;TrustServerCertificate=True;"
       }
     }
   }
