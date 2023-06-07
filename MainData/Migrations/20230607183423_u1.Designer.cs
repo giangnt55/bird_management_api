@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MainData.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20230605041953_u1")]
+    [Migration("20230607183423_u1")]
     partial class u1
     {
         /// <inheritdoc />
@@ -500,8 +500,7 @@ namespace MainData.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UserId")
-                        .IsRequired()
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -616,14 +615,12 @@ namespace MainData.Migrations
                     b.HasOne("MainData.Entities.Comment", "Comment")
                         .WithMany("Likes")
                         .HasForeignKey("TargetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("MainData.Entities.Post", "Post")
                         .WithMany("Likes")
                         .HasForeignKey("TargetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Comment");
 

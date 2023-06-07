@@ -16,7 +16,7 @@ namespace API.Services
         Task<ApiResponse<DetailPostDto>> Create(PostCreateDto postDto);
         Task<ApiResponse<DetailPostDto>> Update(Guid id, PostUpdateDto postUpdateDto);
         Task<ApiResponse> Delete(Guid id);
-        Task<ApiResponse<LikeResultDto>> LikePost(LikeDto likeDto);
+        Task<ApiResponse<LikeResultDto>> LikePost(Guid id);
     }
 
     public class PostService : BaseService, IPostService
@@ -167,9 +167,9 @@ namespace API.Services
             return await GetPost(post.Id);
         }
 
-        public async Task<ApiResponse<LikeResultDto>> LikePost(LikeDto likeDto)
+        public async Task<ApiResponse<LikeResultDto>> LikePost(Guid id)
         {
-            var post = await MainUnitOfWork.PostRepository.FindOneAsync(likeDto.PostId);
+            var post = await MainUnitOfWork.PostRepository.FindOneAsync(id);
             if (post == null)
                 throw new ApiException("Post not found", StatusCode.NOT_FOUND);
 

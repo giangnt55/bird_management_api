@@ -28,11 +28,13 @@ public class LikeConfig : IEntityTypeConfiguration<Like>
         builder.HasOne(x => x.Comment)
             .WithMany(x => x.Likes)
             .HasForeignKey(x => x.TargetId)
+            .IsRequired(false)
             .OnDelete(DeleteBehavior.Restrict);;
         
         builder.HasOne(x => x.Post)
             .WithMany(x => x.Likes)
             .HasForeignKey(x => x.TargetId)
+            .IsRequired(false)
             .OnDelete(DeleteBehavior.Restrict);;
     }
 }
