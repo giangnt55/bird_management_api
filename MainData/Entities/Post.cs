@@ -34,7 +34,7 @@ public class PostConfig : IEntityTypeConfiguration<Post>
         
         builder.HasMany(x => x.Likes)
             .WithOne(x => x.Post)
-            .HasForeignKey(x => x.TargetId);
+            .HasForeignKey(x => x.PostId);
         
         builder.HasMany(x => x.Reports)
             .WithOne(x => x.Post)
