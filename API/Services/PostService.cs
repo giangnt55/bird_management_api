@@ -75,7 +75,7 @@ namespace API.Services
 
             foreach (var post in posts.Items)
             {
-                post.TotalLike = likes.Count(x => x!.TargetId == post.Id);
+                post.TotalLike = likes.Count(x => x!.PostId == post.Id);
             }
             
             // Map comments to each post
@@ -83,7 +83,7 @@ namespace API.Services
             
             foreach (var post in posts.Items)
             {
-                post.TotalComment = likes.Count(x => x!.TargetId == post.Id);
+                post.TotalComment = likes.Count(x => x!.PostId == post.Id);
             }
 
             return ApiResponses<PostDto>.Success(
@@ -108,7 +108,7 @@ namespace API.Services
                 throw new ApiException("Not found this post", StatusCode.NOT_FOUND);
 
             post.TotalLike = MainUnitOfWork.LikeRepository.GetQuery().Count(x => !x!.DeletedAt.HasValue
-                && x.TargetId == post.Id);
+                && x.PostId == post.Id);
             
             // Map CDC for the post
             post = await _mapperRepository.MapCreator(post);
@@ -140,7 +140,7 @@ namespace API.Services
 
                 foreach (var reply in repliesOfComments)
                 {
-                    reply.TotalLike = likeDataSet.Count(x => x!.TargetId == reply.Id);
+                    reply.TotalLike = likeDataSet.Count(x => x!.PostId == reply.Id);
                 }
 
                 // Map CDC for replies
@@ -148,7 +148,7 @@ namespace API.Services
                 comment.Replies = repliesOfComments;
                 
                 // Map total like for comment
-                comment.TotalLike = likeDataSet.Count(x => x!.TargetId == comment.Id);
+                comment.TotalLike = likeDataSet.Count(x => x!.PostId == comment.Id);
             }
 
             return ApiResponse<DetailPostDto>.Success(post);
