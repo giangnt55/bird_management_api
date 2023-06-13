@@ -225,6 +225,9 @@ namespace MainData.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("CommentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -237,7 +240,7 @@ namespace MainData.Migrations
                     b.Property<Guid?>("EditorId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("TargetId")
+                    b.Property<Guid?>("PostId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -245,9 +248,11 @@ namespace MainData.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CommentId");
+
                     b.HasIndex("CreatorId");
 
-                    b.HasIndex("TargetId");
+                    b.HasIndex("PostId");
 
                     b.ToTable("Likes");
                 });
@@ -605,18 +610,18 @@ namespace MainData.Migrations
 
             modelBuilder.Entity("MainData.Entities.Like", b =>
                 {
+                    b.HasOne("MainData.Entities.Comment", "Comment")
+                        .WithMany("Likes")
+                        .HasForeignKey("CommentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("MainData.Entities.User", "User")
                         .WithMany("Likes")
                         .HasForeignKey("CreatorId");
 
-                    b.HasOne("MainData.Entities.Comment", "Comment")
-                        .WithMany("Likes")
-                        .HasForeignKey("TargetId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("MainData.Entities.Post", "Post")
                         .WithMany("Likes")
-                        .HasForeignKey("TargetId")
+                        .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Comment");

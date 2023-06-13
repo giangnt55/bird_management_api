@@ -287,7 +287,8 @@ namespace MainData.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TargetId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CommentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     EditorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -298,14 +299,14 @@ namespace MainData.Migrations
                 {
                     table.PrimaryKey("PK_Likes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Likes_Comments_TargetId",
-                        column: x => x.TargetId,
+                        name: "FK_Likes_Comments_CommentId",
+                        column: x => x.CommentId,
                         principalTable: "Comments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Likes_Post_TargetId",
-                        column: x => x.TargetId,
+                        name: "FK_Likes_Post_PostId",
+                        column: x => x.PostId,
                         principalTable: "Post",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -372,14 +373,19 @@ namespace MainData.Migrations
                 column: "ParticipantId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Likes_CommentId",
+                table: "Likes",
+                column: "CommentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Likes_CreatorId",
                 table: "Likes",
                 column: "CreatorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Likes_TargetId",
+                name: "IX_Likes_PostId",
                 table: "Likes",
-                column: "TargetId");
+                column: "PostId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notifications_UserId",
