@@ -17,7 +17,6 @@ namespace API.Dtos
     public class ParticipantCreateDto
     {
         public Guid EventId { get; set; }
-        public ParticipantRole Role { get; set; }
 
     }
     public class ParticipantUpdateDto

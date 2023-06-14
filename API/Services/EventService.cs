@@ -14,7 +14,6 @@ public interface IEventService : IBaseService
     Task<ApiResponse<EventDetailDto>> Create(EventCreateDto eventsDto);
     Task<ApiResponse<EventDetailDto>> Update(Guid id, EventUpdateDto eventsUpdateDto);
     Task<ApiResponse> Delete(Guid id);
-    Task<ApiResponse<ParticipantResultDto>> ParticipateEvent(Guid id);
 }
 public class EventService : BaseService, IEventService
 {
@@ -81,8 +80,21 @@ public class EventService : BaseService, IEventService
                 x => !x.DeletedAt.HasValue,
                 x => string.IsNullOrEmpty(queryDto.EventName) || x.EventName.Trim().ToLower().Contains(queryDto.EventName.Trim().ToLower())
         }, queryDto.OrderBy, queryDto.Skip(), queryDto.PageSize);
-
+        
         // Map to get CDC
+        eventss.Items = await _mapperRepository.MapCreator(eventss.Items.ToList());
+
+        // Map total participant to each event
+        var participant = MainUnitOfWork.ParticipantRepository.GetQuery();
+        
+
+        // Map feedbacks to each post
+        var feedbacks = MainUnitOfWork.FeedbackRepository.GetQuery();
+        foreach (var events in eventss.Items)
+        {
+            events.TotalParticipant = participant.Count(x => x!.EventId == events.Id);
+            events.TotalFeedback = feedbacks.Count(x => x!.EventId == events.Id);
+        }
 
         return ApiResponses<EventDto>.Success(
             eventss.Items,
@@ -128,50 +140,4 @@ public class EventService : BaseService, IEventService
 
         return await GetEvent(id);
     }
-
-    public async Task<ApiResponse<ParticipantResultDto>> ParticipateEvent(Guid id)
-    {
-        var events = await MainUnitOfWork.EventRepository.FindOneAsync(id);
-        if (events == null)
-            throw new ApiException("Event not found", StatusCode.NOT_FOUND);
-
-        // Check if the user has already participanted the events
-        var existingParticipant = await MainUnitOfWork.ParticipantRepository.FindOneAsync(new Expression<Func<Participant, bool>>[]
-            {
-                    x => x.EventId == events.Id && x.CreatorId == AccountId
-            });
-
-        if (existingParticipant != null)
-        {
-            // User has already participanted the events, so remove the participant
-            if (!await MainUnitOfWork.ParticipantRepository.DeleteAsync(existingParticipant, AccountId, CurrentDate))
-                throw new ApiException("Failed to remove the participant", StatusCode.SERVER_ERROR);
-        }
-        else
-        {
-            // Create a new Participant entity
-            var participant = new Participant
-            {
-                EventId = events.Id,
-                CreatorId = AccountId,
-                CreatedAt = CurrentDate,
-                Role = (ParticipantRole) 1,
-            };
-
-            if (!await MainUnitOfWork.ParticipantRepository.InsertAsync(participant, AccountId, CurrentDate))
-                throw new ApiException("Failed to participant the events", StatusCode.SERVER_ERROR);
-        }
-
-        // Retrieve the updated total number of participants for the events
-        var totalParticipants = MainUnitOfWork.ParticipantRepository.GetQuery().Where(x =>
-            !x!.DeletedAt.HasValue);
-
-        var resultDto = new ParticipantResultDto
-        {
-            TotalParticipants = totalParticipants.Count(x => x.EventId == events.Id)
-        };
-
-        return ApiResponse<ParticipantResultDto>.Success(resultDto);
-    }
 }
-

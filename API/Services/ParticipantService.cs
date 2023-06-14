@@ -95,14 +95,21 @@ public class ParticipantService : BaseService, IParticipantService
     }
     public async Task<ApiResponse<DetailParticipantDto>> Create(ParticipantCreateDto participantDto)
     {
+
+        // check account
+        var checkCreator = MainUnitOfWork.ParticipantRepository.GetQuery().Where(x => x.CreatorId == AccountId && participantDto.EventId == x.EventId);
+        if (checkCreator.Count() != 0)
+        {
+            throw new ApiException("Participant already has an account", StatusCode.BAD_REQUEST);
+        }
+
         var participant = participantDto.ProjectTo<ParticipantCreateDto, Participant>();
         var existingParticipant = GetParticipant(participant.Id);
-        participant.Id = Guid.Empty;
         if (existingParticipant == null)
             throw new ApiException("Can't create", StatusCode.SERVER_ERROR);
 
-        // count participant to check max join
-        var CountParticipant = MainUnitOfWork.EventRepository.GetQuery().Count(x => !x!.DeletedAt.HasValue && x.Id == participantDto.EventId);
+        // count participant to check max join and role
+        var CountParticipant = MainUnitOfWork.ParticipantRepository.GetQuery().Count(x => !x!.DeletedAt.HasValue && x.EventId == participantDto.EventId && x.Role == ParticipantRole.Participant);
 
         // get maxparti in event
         var existingEvent = await MainUnitOfWork.EventRepository.FindOneAsync<EventDetailDto>(
@@ -115,11 +122,15 @@ public class ParticipantService : BaseService, IParticipantService
         // check count and max
         if (CountParticipant > existingEvent.MaxParticipants)
         {
-            throw new ApiException("Participant was fullly", StatusCode.SERVER_ERROR);
+            throw new ApiException("Participant was fullly", StatusCode.BAD_REQUEST);
         }
-        // get and set role participant auto
+        else if (existingEvent.StartDate> DateTime.Now) //event start thì không join
+        {
+            throw new ApiException("event was expired", StatusCode.BAD_REQUEST);
+        }
+
+
         participant.Role = ParticipantRole.Participant;
-        participant.CreatorId = AccountId;
         //insert
         if (!await MainUnitOfWork.ParticipantRepository.InsertAsync(participant, AccountId))
             throw new ApiException("Can't create", StatusCode.SERVER_ERROR);

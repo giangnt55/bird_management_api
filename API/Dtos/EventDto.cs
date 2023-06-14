@@ -16,6 +16,9 @@ public class EventDto : BaseDto
     public string Location { get; set; } = string.Empty;
     public string Prerequisite { get; set; } = string.Empty;
     public string EvaluationStrategy { get; set; } = string.Empty;
+    public int TotalParticipant { get; set; }
+    public int TotalFeedback { get; set; }
+
 
     //Relationship
     public virtual IEnumerable<Participant>? Participants { get; set; }

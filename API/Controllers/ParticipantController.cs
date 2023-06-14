@@ -42,6 +42,5 @@ namespace API.Controllers
         {
             return await _service.Delete(id);
         }
-
     }
 }

@@ -49,12 +49,5 @@ namespace API.Controllers
         {
             return await _service.Delete(id);
         }
-
-        [HttpPost("{id:guid}")]
-        [SwaggerOperation("Like post")]
-        public async Task<ApiResponse> LikePost(Guid id)
-        {
-             return await _service.LikePost(id);
-        }
     }
 }
