@@ -36,7 +36,7 @@ public class CommentConfig : IEntityTypeConfiguration<Comment>
         
         builder.HasMany(x => x.Likes)
             .WithOne(x => x.Comment)
-            .HasForeignKey(x => x.TargetId);
+            .HasForeignKey(x => x.CommentId);
         
         builder.HasMany(x => x.Reports)
             .WithOne(x => x.Comment)

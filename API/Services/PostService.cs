@@ -1,4 +1,4 @@
-﻿using API.Dtos;
+﻿﻿using API.Dtos;
 using AppCore.Models;
 using MainData;
 using MainData.Entities;
@@ -9,14 +9,13 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace API.Services
 {
-    public interface IPostService : IBaseService
+    public interface IPostService : IBaseService 
     {
         Task<ApiResponses<PostDto>> GetPosts(PostQueryDto queryDto);
         Task<ApiResponse<DetailPostDto>> GetPost(Guid id);
         Task<ApiResponse<DetailPostDto>> Create(PostCreateDto postDto);
         Task<ApiResponse<DetailPostDto>> Update(Guid id, PostUpdateDto postUpdateDto);
         Task<ApiResponse> Delete(Guid id);
-        Task<ApiResponse<LikeResultDto>> LikePost(Guid id);
     }
 
     public class PostService : BaseService, IPostService
@@ -52,10 +51,10 @@ namespace API.Services
 
             if (existingPost.CreatorId != AccountId)
                 throw new ApiException("Can't not delete other's post", StatusCode.BAD_REQUEST);
-
+            
             if (await MainUnitOfWork.PostRepository.DeleteAsync(existingPost, AccountId, CurrentDate))
                 throw new ApiException("Can't not delete", StatusCode.SERVER_ERROR);
-
+            
             return ApiResponse.Success();
         }
 
@@ -76,15 +75,15 @@ namespace API.Services
 
             foreach (var post in posts.Items)
             {
-                post.TotalLike = likes.Count(x => x!.TargetId == post.Id);
+                post.TotalLike = likes.Count(x => x!.PostId == post.Id);
             }
-
+            
             // Map comments to each post
             var comments = MainUnitOfWork.CommentRepository.GetQuery();
-
+            
             foreach (var post in posts.Items)
             {
-                post.TotalComment = likes.Count(x => x!.TargetId == post.Id);
+                post.TotalComment = likes.Count(x => x!.PostId == post.Id);
             }
 
             return ApiResponses<PostDto>.Success(
@@ -109,8 +108,8 @@ namespace API.Services
                 throw new ApiException("Not found this post", StatusCode.NOT_FOUND);
 
             post.TotalLike = MainUnitOfWork.LikeRepository.GetQuery().Count(x => !x!.DeletedAt.HasValue
-                && x.TargetId == post.Id);
-
+                && x.PostId == post.Id);
+            
             // Map CDC for the post
             post = await _mapperRepository.MapCreator(post);
 
@@ -122,18 +121,18 @@ namespace API.Services
                     x => x.PostId == post.Id,
                     x => x.ReplyTo == null || x.ReplyTo == Guid.Empty
                 }, null);
-
+            
             // Map CDC for comment
             comments = await _mapperRepository.MapCreator(comments);
 
             post.TotalComment = comments.Count();
 
             // Map replies for each comment
-            var commentDataset = MainUnitOfWork.CommentRepository.GetQuery().Where(x =>
+            var commentDataset = MainUnitOfWork.CommentRepository.GetQuery().Where(x=> 
                 !x!.DeletedAt.HasValue);
-            var likeDataSet = MainUnitOfWork.LikeRepository.GetQuery().Where(x =>
+            var likeDataSet = MainUnitOfWork.LikeRepository.GetQuery().Where(x=> 
                 !x!.DeletedAt.HasValue);
-
+            
             foreach (var comment in comments)
             {
                 var repliesOfComments = commentDataset.Where(x => x!.ReplyTo == comment.Id)
@@ -141,15 +140,15 @@ namespace API.Services
 
                 foreach (var reply in repliesOfComments)
                 {
-                    reply.TotalLike = likeDataSet.Count(x => x!.TargetId == reply.Id);
+                    reply.TotalLike = likeDataSet.Count(x => x!.PostId == reply.Id);
                 }
 
                 // Map CDC for replies
                 repliesOfComments = await _mapperRepository.MapCreator(repliesOfComments);
                 comment.Replies = repliesOfComments;
-
+                
                 // Map total like for comment
-                comment.TotalLike = likeDataSet.Count(x => x!.TargetId == comment.Id);
+                comment.TotalLike = likeDataSet.Count(x => x!.PostId == comment.Id);
             }
 
             return ApiResponse<DetailPostDto>.Success(post);
@@ -158,7 +157,7 @@ namespace API.Services
         public async Task<ApiResponse<DetailPostDto>> Create(PostCreateDto postDto)
         {
             var post = postDto.ProjectTo<PostCreateDto, Post>();
-
+            
             post.Id = Guid.Empty;
 
             if (!await MainUnitOfWork.PostRepository.InsertAsync(post, AccountId, CurrentDate))
@@ -166,49 +165,6 @@ namespace API.Services
 
             return await GetPost(post.Id);
         }
-
-        public async Task<ApiResponse<LikeResultDto>> LikePost(Guid id)
-        {
-            var post = await MainUnitOfWork.PostRepository.FindOneAsync(id);
-            if (post == null)
-                throw new ApiException("Post not found", StatusCode.NOT_FOUND);
-
-            // Check if the user has already liked the post
-            var existingLike = await MainUnitOfWork.LikeRepository.FindOneAsync(new Expression<Func<Like, bool>>[]
-                {
-                    x => x.TargetId == post.Id && x.CreatorId == AccountId
-                });
-
-            if (existingLike != null)
-            {
-                // User has already liked the post, so remove the like
-                if (!await MainUnitOfWork.LikeRepository.DeleteAsync(existingLike, AccountId, CurrentDate))
-                    throw new ApiException("Failed to remove the like", StatusCode.SERVER_ERROR);
-            }
-            else
-            {
-                // Create a new Like entity
-                var like = new Like
-                {
-                    TargetId = post.Id,
-                    CreatorId = AccountId,
-                    CreatedAt = CurrentDate
-                };
-
-                if (!await MainUnitOfWork.LikeRepository.InsertAsync(like, AccountId, CurrentDate))
-                    throw new ApiException("Failed to like the post", StatusCode.SERVER_ERROR);
-            }
-
-            // Retrieve the updated total number of likes for the post
-            var totalLikes = MainUnitOfWork.LikeRepository.GetQuery().Where(x =>
-                !x!.DeletedAt.HasValue);
-
-            var resultDto = new LikeResultDto
-            {
-                TotalLikes = totalLikes.Count(x => x.TargetId == post.Id)
-            };
-
-            return ApiResponse<LikeResultDto>.Success(resultDto);
-        }
+        
     }
 }
