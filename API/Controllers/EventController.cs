@@ -49,5 +49,11 @@ namespace API.Controllers
         {
             return await _service.Delete(id);
         }
+        [HttpPost("{id:guid}")]
+        [SwaggerOperation("number participant join")]
+        public async Task<ApiResponse> ParticipateEvent(Guid id)
+        {
+            return await _service.ParticipateEvent(id);
+        }
     }
 }
