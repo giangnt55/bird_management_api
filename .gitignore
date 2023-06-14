@@ -87,6 +87,7 @@ local.env
 obj/
 bin/
 .idea/
+.vs/
 
 # appsetting files
 #appsettings.json

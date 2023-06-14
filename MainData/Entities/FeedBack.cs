@@ -12,8 +12,8 @@ public class FeedBack : BaseEntity
     public int? Rating { get; set; }
     
     //Relationship
-    public virtual Event Event { get; set; } = new Event();
-    public virtual Participant Participant { get; set; } = new Participant();
+    public virtual Event? Event { get; set; }
+    public virtual Participant? Participant { get; set; }
 }
 
 public class FeedBackConfig : IEntityTypeConfiguration<FeedBack>

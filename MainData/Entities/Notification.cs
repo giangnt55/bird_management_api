@@ -14,7 +14,7 @@ public class Notification : BaseEntity
     public DateTime? ReadAt { get; set; }
     
     //Relationship
-    public virtual User User { get; set; } = new User();
+    public virtual User? User { get; set; }
 }
 
 public enum NotificationType

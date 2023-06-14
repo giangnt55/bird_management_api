@@ -7,23 +7,21 @@ namespace MainData.Entities;
 
 public class Post : BaseEntity
 {
-    public Guid GroupId { get; set; }
     public string? Tittle { get; set; }
     public string Content { get; set; } = string.Empty;
     public string? Image { get; set; }
     
     //Relationship
-    public virtual IEnumerable<Comment> Comments { get; set; } = new List<Comment>();
-    public virtual IEnumerable<Like> Likes { get; set; } = new List<Like>();
-    public virtual IEnumerable<Report> Reports { get; set; } = new List<Report>();
-    public virtual User User { get; set; } = new User();
+    public virtual IEnumerable<Comment>? Comments { get; set; }
+    public virtual IEnumerable<Like>? Likes { get; set; }
+    public virtual IEnumerable<Report>? Reports { get; set; }
+    public virtual User? User { get; set; }
 }
 
 public class PostConfig : IEntityTypeConfiguration<Post>
 {
     public void Configure(EntityTypeBuilder<Post> builder)
     {
-        builder.Property(x => x.GroupId).IsRequired();
         builder.Property(x => x.Image).IsRequired(false);
         builder.Property(x => x.Tittle).IsRequired(false);
         builder.Property(x => x.Content).IsRequired();
@@ -36,7 +34,7 @@ public class PostConfig : IEntityTypeConfiguration<Post>
         
         builder.HasMany(x => x.Likes)
             .WithOne(x => x.Post)
-            .HasForeignKey(x => x.TargetId);
+            .HasForeignKey(x => x.PostId);
         
         builder.HasMany(x => x.Reports)
             .WithOne(x => x.Post)

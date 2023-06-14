@@ -10,7 +10,7 @@ public class Report : BaseEntity
     public ReportType Type { get; set; } 
     
     //Relationship
-    public virtual User User { get; set; } = new User();
+    public virtual User? User { get; set; }
     public virtual Post? Post { get; set; }
     public virtual Comment? Comment { get; set; }
 }
