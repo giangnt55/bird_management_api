@@ -1,7 +1,6 @@
 ﻿using API.Dtos;
 using API.Services;
 using AppCore.Models;
-using MainData.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -49,6 +48,13 @@ namespace API.Controllers
         public async Task<ApiResponse> Delete(Guid id)
         {
             return await _service.Delete(id);
+        }
+
+        [HttpPost("{id:guid}")]
+        [SwaggerOperation("Like post")]
+        public async Task<ApiResponse> LikePost(Guid id)
+        {
+             return await _service.LikePost(id);
         }
     }
 }

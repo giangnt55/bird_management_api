@@ -9,10 +9,12 @@ namespace API.Services
 {
     public interface INewsService : IBaseService
     {
-        Task<ApiResponses<NewsDto>> GetNews(NewsQueryDto queryDto);
-        Task<ApiResponse<bool>> InsertNews(NewsCreateDto newsDto);
-        Task<ApiResponse<bool>> UpdateNews(Guid Id, NewsUpdateDto newsDto);
-        Task<ApiResponse<bool>> DeleteNews(NewsDeleteDto newsDto);
+        Task<ApiResponses<NewsDto>> GetAllNews(NewsQueryDto queryDto);
+        Task<ApiResponse<News>> InsertNews(NewsCreateDto newsDto);
+        Task<ApiResponse<News>> UpdateNews(Guid Id, NewsUpdateDto newsDto);
+        Task<ApiResponse> DeleteNews(GetNewsDto newsDto);
+
+        Task<ApiResponse<News>> GetNewsDetail(Guid id);
     }
 
     public class NewsService : BaseService, INewsService
@@ -20,28 +22,28 @@ namespace API.Services
         public NewsService(MainUnitOfWork mainUnitOfWork, IHttpContextAccessor httpContextAccessor, IMapperRepository mapperRepository) : base(mainUnitOfWork, httpContextAccessor, mapperRepository)
         {
         }
-        
-        public async Task<ApiResponse<bool>> DeleteNews(NewsDeleteDto newsDto)
+
+        public async Task<ApiResponse> DeleteNews(GetNewsDto newsDto)
         {
             var existingNews= await MainUnitOfWork.NewsRepository.FindOneAsync(newsDto.Id);
             if (existingNews == null)
             {
-                return (ApiResponse<bool>)ApiResponse<bool>.Failed();
+                return ApiResponse.Failed();
             }
 
             bool isDeleted = await MainUnitOfWork.NewsRepository.DeleteAsync(existingNews, AccountId);
 
             if (isDeleted)
             {
-                return ApiResponse<bool>.Success(true);
+                return ApiResponse.Success("Delete successfully");
             }
             else
             {
-                return (ApiResponse<bool>)ApiResponse<bool>.Failed();
+                return ApiResponse.Failed();
             }
         }
 
-        public async Task<ApiResponses<NewsDto>> GetNews(NewsQueryDto queryDto)
+        public async Task<ApiResponses<NewsDto>> GetAllNews(NewsQueryDto queryDto)
         {
             var response = await MainUnitOfWork.NewsRepository.FindResultAsync<NewsDto>(new Expression<Func<News, bool>>[]
             {
@@ -58,7 +60,14 @@ namespace API.Services
             );
         }
 
-        public async Task<ApiResponse<bool>> InsertNews(NewsCreateDto newsDto)
+        public async Task<ApiResponse<News>> GetNewsDetail(Guid id)
+        {
+            var response = await MainUnitOfWork.NewsRepository.FindOneAsync(id);
+
+            return ApiResponse<News>.Success(response);
+        }
+
+        public async Task<ApiResponse<News>> InsertNews(NewsCreateDto newsDto)
         {
             var news = new News
             {
@@ -74,21 +83,21 @@ namespace API.Services
 
             if (response)
             {
-                return ApiResponse<bool>.Success(true);
+                return ApiResponse<News>.Success(news);
             }
             else
             {
-                return (ApiResponse<bool>)ApiResponse.Failed();
+                return (ApiResponse<News>)ApiResponse.Failed();
             }
         }
 
-        public async Task<ApiResponse<bool>> UpdateNews(Guid Id, NewsUpdateDto newsDto)
+        public async Task<ApiResponse<News>> UpdateNews(Guid Id, NewsUpdateDto newsDto)
         {
             var existingNews = await MainUnitOfWork.NewsRepository.FindOneAsync(Id);
 
             if (existingNews == null)
             {
-                return (ApiResponse<bool>)ApiResponse<bool>.Failed();
+                return (ApiResponse<News>)ApiResponse.Failed();
             }
 
             var news = existingNews;
@@ -104,11 +113,11 @@ namespace API.Services
 
             if (isUpdated)
             {
-                return ApiResponse<bool>.Success(true);
+                return ApiResponse<News>.Success(news);
             }
             else
             {
-                return (ApiResponse<bool>)ApiResponse<bool>.Failed();
+                return (ApiResponse<News>)ApiResponse.Failed();
             }
         }
         

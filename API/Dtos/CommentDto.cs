@@ -20,3 +20,14 @@ public class DetailCommentDto : BaseDto
     public int TotalReply { get; set; }
     public List<CommentDto> Replies { get; set; } = new List<CommentDto>();
 }
+
+public class CommentCreateDto
+{
+    public string Content { get; set; }
+    //public Guid? ReplyTo { get; set; }
+}
+
+public class TotalCommentDto
+{
+    public int TotalComemnts { get; set; }
+}
