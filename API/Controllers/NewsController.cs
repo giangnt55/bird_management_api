@@ -16,36 +16,36 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [SwaggerOperation("Get list ...")]
+        [SwaggerOperation("Get list news")]
         public async Task<ApiResponses<NewsDto>> GetAllNews([FromQuery] NewsQueryDto queryDto)
         {
             return await _service.GetAllNews(queryDto);
         }
 
         [HttpPost]
-        [SwaggerOperation("Insert ...")]
-        public async Task<ApiResponse> InsertNews(NewsCreateDto newsDto)
+        [SwaggerOperation("Insert news")]
+        public async Task<ApiResponse<NewsDto>> InsertNews(NewsCreateDto newsDto)
         {
             return await _service.InsertNews(newsDto);
         }
 
         [HttpPut]
-        [SwaggerOperation("Update ...")]
-        public async Task<ApiResponse> UpdateNews(Guid Id, NewsUpdateDto newsDto)
+        [SwaggerOperation("Update news")]
+        public async Task<ApiResponse<NewsDto>> UpdateNews(Guid id, NewsUpdateDto newsDto)
         {
-            return await _service.UpdateNews(Id, newsDto);
+            return await _service.UpdateNews(id, newsDto);
         }
 
         [HttpDelete]
-        [SwaggerOperation("Delete ...")]
+        [SwaggerOperation("Delete news")]
         public async Task<ApiResponse> DeleteNews(GetNewsDto newsDto)
         {
             return await _service.DeleteNews(newsDto);
         }
 
         [HttpGet("{id}")]
-        [SwaggerOperation("Detail ...")]
-        public async Task<ApiResponse> GetNewsDetail(Guid id)
+        [SwaggerOperation("Detail news")]
+        public async Task<ApiResponse<NewsDto>> GetNewsDetail(Guid id)
         {
             return await _service.GetNewsDetail(id);
         }
