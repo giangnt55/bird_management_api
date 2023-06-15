@@ -37,6 +37,7 @@ namespace API.Controllers
         }
 
         [HttpPut("{id:guid}")]
+        
         [SwaggerOperation("Update event information")]
         public async Task<ApiResponse<EventDetailDto>> Update(Guid id, EventUpdateDto eventUpdateDto)
         {

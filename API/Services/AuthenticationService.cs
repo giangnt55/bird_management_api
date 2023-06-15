@@ -146,7 +146,8 @@ public class AuthenticationService : BaseService, IAuthenticationService
         user.Status = UserStatus.Active;
         user.Role = UserRole.Member;
         user.Salt = salt;
-
+        string[] emailParts = registerDto.Email.Split('@'); // Tách địa chỉ email thành mảng các phần tử dựa trên ký tự "@"
+        user.Username = emailParts[0]; ; // Gán gmail cho username
         if (!await MainUnitOfWork.UserRepository.InsertAsync(user, Guid.Empty, CurrentDate))
             throw new ApiException("Register fail", StatusCode.SERVER_ERROR);
 

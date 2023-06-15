@@ -86,7 +86,9 @@ public class EventService : BaseService, IEventService
 
         // Map total participant to each event
         var participant = MainUnitOfWork.ParticipantRepository.GetQuery();
-        
+
+        // Average rating count and average
+        int count = 0;
 
         // Map feedbacks to each post
         var feedbacks = MainUnitOfWork.FeedbackRepository.GetQuery();
@@ -94,6 +96,15 @@ public class EventService : BaseService, IEventService
         {
             events.TotalParticipant = participant.Count(x => x!.EventId == events.Id);
             events.TotalFeedback = feedbacks.Count(x => x!.EventId == events.Id);
+            var eventFeedbacks = feedbacks.Where(x => x!.EventId == events.Id).ToList();
+            if (eventFeedbacks.Any())
+            {
+                events.AverageRating = eventFeedbacks.Average(x => (decimal)x.Rating);
+            }
+            else
+            {
+                events.AverageRating = 0; // Or any default value when there are no feedbacks
+            }
         }
 
         return ApiResponses<EventDto>.Success(

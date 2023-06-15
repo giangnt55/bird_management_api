@@ -21,7 +21,6 @@ public class FeedbackCreateDto
     public Guid EventId { get; set; }
     public string? Content { get; set; }
     public RateStar? Rating { get; set; }
-    public float? AverageRating { get; set; }
 }
 
 public class FeedbackUpdateDto

@@ -1,6 +1,8 @@
 ﻿using API.Dtos;
 using API.Services;
 using AppCore.Models;
+using MainData.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
