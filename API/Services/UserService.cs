@@ -22,7 +22,7 @@ public class UserService : BaseService, IUserService
   {
     var account = await MainUnitOfWork.UserRepository.FindOneAsync<UserDto>(new Expression<Func<User, bool>>[]
     {
-      x => x.DeletedAt.HasValue,
+      x => !x.DeletedAt.HasValue,
       x => x.Id == AccountId
     });
 
