@@ -1,6 +1,8 @@
 ﻿using API.Dtos;
 using API.Services;
 using AppCore.Models;
+using MainData.Entities;
+using MainData.Middlewares;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 

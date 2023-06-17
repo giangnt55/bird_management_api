@@ -37,7 +37,7 @@ namespace API.Services
             post.Tittle = postUpdateDto.Tittle ?? post.Tittle;
             post.Image = postUpdateDto.Image ?? post.Image;
 
-            if (!await MainUnitOfWork.PostRepository.InsertAsync(post, AccountId, CurrentDate))
+            if (!await MainUnitOfWork.PostRepository.UpdateAsync(post, AccountId, CurrentDate))
                 throw new ApiException("Can't not update", StatusCode.SERVER_ERROR);
 
             return await GetPost(id);
@@ -52,7 +52,7 @@ namespace API.Services
             if (existingPost.CreatorId != AccountId)
                 throw new ApiException("Can't not delete other's post", StatusCode.BAD_REQUEST);
             
-            if (await MainUnitOfWork.PostRepository.DeleteAsync(existingPost, AccountId, CurrentDate))
+            if (!await MainUnitOfWork.PostRepository.DeleteAsync(existingPost, AccountId, CurrentDate))
                 throw new ApiException("Can't not delete", StatusCode.SERVER_ERROR);
             
             return ApiResponse.Success();

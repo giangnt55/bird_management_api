@@ -15,6 +15,8 @@ public interface IAuthenticationService : IBaseService
     Task<ApiResponse<AuthDto>> RefreshToken(AuthRefreshDto authRefreshDto);
     Task<ApiResponse> Register(RegisterDto registerDto);
     Task<ApiResponse> RevokeToken();
+    Task<ApiResponse> ResetPasswordByEmail(ResetPasswordDto email);
+    Task<ApiResponse> ResetPasswordByCode(UpdatePasswordDto updatePasswordDto);
 }
 
 public class AuthenticationService : BaseService, IAuthenticationService
@@ -210,6 +212,101 @@ public class AuthenticationService : BaseService, IAuthenticationService
             new(AppClaimTypes.Status, account.Status.ToString()),
         }.ToList();
         return claims;
+    }
+
+    public async Task<ApiResponse> ResetPasswordByEmail(ResetPasswordDto email)
+    {
+        var user = MainUnitOfWork.UserRepository.GetQuery().Where(x => x.Email == email.Email).SingleOrDefault();
+        if (user == null)
+        {
+            throw new ApiException("User not found", StatusCode.NOT_FOUND);
+        }
+        
+        // Generate a random reset code
+        var resetCode = GenerateRandomCode(6);
+        // Create a reset token
+        var claims = SetClaims(user!);
+        var accessExpiredAt = CurrentDate.AddMinutes(EnvironmentExtension.GetJwtAccessTokenExpires());
+        var resetToken = new Token
+        {
+            Id = Guid.NewGuid(),
+            UserId = user.Id,
+            Type = TokenType.ResetPassword,
+            AccessToken = JwtExtensions.GenerateAccessToken(claims, accessExpiredAt),
+            RefreshToken = resetCode,
+            AccessExpiredAt = DateTime.Now.AddMinutes(30),
+            RefreshExpiredAt = DateTime.Now.AddMinutes(30),
+            Status = TokenStatus.Active
+        };
+        var token = MainUnitOfWork.TokenRepository.GetQuery().Where(x => x.UserId == user.Id && x.Type == TokenType.ResetPassword).SingleOrDefault();
+        if (token != null)
+        {
+            token = resetToken;
+            if (!await MainUnitOfWork.TokenRepository.InsertAsync(token, user.Id, CurrentDate))
+            {
+                throw new ApiException(MessageKey.ServerError, StatusCode.SERVER_ERROR);
+            }
+
+        }
+        // Save the reset token to the database
+        if (!await MainUnitOfWork.TokenRepository.InsertAsync(resetToken, user.Id, CurrentDate))
+        {
+            throw new ApiException(MessageKey.ServerError, StatusCode.SERVER_ERROR);
+        }
+        // Send the reset code via email
+        MailExtension _mailExtension = new MailExtension();
+        var resetEmailBody = $"Your reset code is: {resetCode}";
+        _mailExtension.SendMail(user.Fullname, user.Email, resetEmailBody);
+
+        return ApiResponse.Success();
+    }
+
+    public async Task<ApiResponse> ResetPasswordByCode(UpdatePasswordDto resetPasswordDto)
+    {
+        var user = MainUnitOfWork.UserRepository.GetQuery().Where(x => x.Email == resetPasswordDto.Email).SingleOrDefault();
+        if (user == null)
+        {
+            throw new ApiException("User not found", StatusCode.NOT_FOUND);
+        }
+
+        // Retrieve the reset token from the database based on the user and reset code
+        var resetToken = MainUnitOfWork.TokenRepository.GetQuery().Where(x => x.UserId == user.Id && x.RefreshToken == resetPasswordDto.resetCode).SingleOrDefault();
+
+        if (resetToken == null)
+        {
+            throw new ApiException("Invalid reset code", StatusCode.BAD_REQUEST);
+        }
+
+        if (resetToken.RefreshExpiredAt < DateTime.Now)
+        {
+            throw new ApiException("Reset token expired", StatusCode.UNAUTHORIZED);
+        }
+
+        // Update the user's password
+        var updateUser = resetPasswordDto.ProjectTo<UpdatePasswordDto, User>();
+        var salt = SecurityExtension.GenerateSalt();
+        updateUser.Password = SecurityExtension.HashPassword<User>(resetPasswordDto.NewPassword, salt);
+        updateUser.Status = UserStatus.Active;
+        updateUser.Role = UserRole.Member;
+        updateUser.Salt = salt;
+        updateUser.Username = user.Username;
+        if (!await MainUnitOfWork.UserRepository.UpdateAsync(user, AccountId, CurrentDate))
+            throw new ApiException("Update Password fail", StatusCode.SERVER_ERROR);
+
+        // Invalidate the reset token
+
+        return ApiResponse.Success();
+    }
+
+    private string GenerateRandomCode(int length)
+    {
+        var random = new Random();
+        var code = string.Empty;
+        for (int i = 0; i < length; i++)
+        {
+            code += random.Next(0, 9).ToString();
+        }
+        return code;
     }
     
 }
