@@ -3,6 +3,7 @@ using AppCore.Models;
 using MainData;
 using MainData.Entities;
 using System.Linq.Expressions;
+using AppCore.Extensions;
 using MainData.Repositories;
 
 namespace API.Services
@@ -10,11 +11,11 @@ namespace API.Services
     public interface INewsService : IBaseService
     {
         Task<ApiResponses<NewsDto>> GetAllNews(NewsQueryDto queryDto);
-        Task<ApiResponse<News>> InsertNews(NewsCreateDto newsDto);
-        Task<ApiResponse<News>> UpdateNews(Guid Id, NewsUpdateDto newsDto);
+        Task<ApiResponse<NewsDto>> InsertNews(NewsCreateDto newsDto);
+        Task<ApiResponse<NewsDto>> UpdateNews(Guid Id, NewsUpdateDto newsDto);
         Task<ApiResponse> DeleteNews(GetNewsDto newsDto);
 
-        Task<ApiResponse<News>> GetNewsDetail(Guid id);
+        Task<ApiResponse<NewsDto>> GetNewsDetail(Guid id);
     }
 
     public class NewsService : BaseService, INewsService
@@ -27,20 +28,15 @@ namespace API.Services
         {
             var existingNews= await MainUnitOfWork.NewsRepository.FindOneAsync(newsDto.Id);
             if (existingNews == null)
-            {
-                return ApiResponse.Failed();
-            }
+                throw new ApiException("Not found this news", StatusCode.NOT_FOUND);
 
-            bool isDeleted = await MainUnitOfWork.NewsRepository.DeleteAsync(existingNews, AccountId);
+            if (existingNews.CreatorId != AccountId)
+                throw new ApiException("Can't not delete others news", StatusCode.BAD_REQUEST);
 
-            if (isDeleted)
-            {
-                return ApiResponse.Success("Delete successfully");
-            }
-            else
-            {
-                return ApiResponse.Failed();
-            }
+            if (await MainUnitOfWork.NewsRepository.DeleteAsync(existingNews, AccountId))
+                throw new ApiException("Delete fail", StatusCode.SERVER_ERROR);
+
+            return ApiResponse.Success();
         }
 
         public async Task<ApiResponses<NewsDto>> GetAllNews(NewsQueryDto queryDto)
@@ -51,6 +47,8 @@ namespace API.Services
                 x => string.IsNullOrEmpty(queryDto.Title) || x.Title.ToLower() == queryDto.Title.Trim().ToLower()
             }, queryDto.OrderBy, queryDto.Skip(), queryDto.PageSize);
 
+            response.Items = await _mapperRepository.MapCreator(response.Items.ToList());
+
             return ApiResponses<NewsDto>.Success(
                 response.Items,
                 response.TotalCount,
@@ -60,66 +58,48 @@ namespace API.Services
             );
         }
 
-        public async Task<ApiResponse<News>> GetNewsDetail(Guid id)
+        public async Task<ApiResponse<NewsDto>> GetNewsDetail(Guid id)
         {
-            var response = await MainUnitOfWork.NewsRepository.FindOneAsync(id);
+          var response = await MainUnitOfWork.NewsRepository.FindOneAsync<NewsDto>(new Expression<Func<News, bool>>[]
+          {
+            x => !x.DeletedAt.HasValue,
+            x => x.Id == id
+          });
 
-            return ApiResponse<News>.Success(response);
+          if (response == null)
+            throw new ApiException("Not found this news", StatusCode.NOT_FOUND);
+
+          response = await _mapperRepository.MapCreator(response);
+            return ApiResponse<NewsDto>.Success(response);
         }
 
-        public async Task<ApiResponse<News>> InsertNews(NewsCreateDto newsDto)
+        public async Task<ApiResponse<NewsDto>> InsertNews(NewsCreateDto newsDto)
         {
-            var news = new News
-            {
-                Id = Guid.NewGuid(),
-                Title = newsDto.Title,
-                Type = newsDto.Type,
-                Content = newsDto.Content,
-                CoverImage = newsDto.CoverImage,
-                PublishDate = newsDto.PublishDate,
-                Author = newsDto.Author,
-            };
-            bool response = await MainUnitOfWork.NewsRepository.InsertAsync(news, AccountId);
+            var news = newsDto.ProjectTo<NewsCreateDto, News>();
+            news.Id = Guid.NewGuid();
+            if (!await MainUnitOfWork.NewsRepository.InsertAsync(news, AccountId))
+              throw new ApiException("Can't insert", StatusCode.SERVER_ERROR);
 
-            if (response)
-            {
-                return ApiResponse<News>.Success(news);
-            }
-            else
-            {
-                return (ApiResponse<News>)ApiResponse.Failed();
-            }
+            return await GetNewsDetail(news.Id);
         }
 
-        public async Task<ApiResponse<News>> UpdateNews(Guid Id, NewsUpdateDto newsDto)
+        public async Task<ApiResponse<NewsDto>> UpdateNews(Guid id, NewsUpdateDto newsDto)
         {
-            var existingNews = await MainUnitOfWork.NewsRepository.FindOneAsync(Id);
+            var existingNews = await MainUnitOfWork.NewsRepository.FindOneAsync(id);
 
             if (existingNews == null)
-            {
-                return (ApiResponse<News>)ApiResponse.Failed();
-            }
-
-            var news = existingNews;
+              throw new ApiException("Not found this news", StatusCode.NOT_FOUND);
 
             existingNews.Title = newsDto.Title ?? existingNews.Title;
-            existingNews.Type = newsDto.Type;
+            existingNews.Type = newsDto.Type ?? existingNews.Type;
             existingNews.Content = newsDto.Content ?? existingNews.Content;
             existingNews.CoverImage = newsDto.CoverImage ?? existingNews.CoverImage;
-            existingNews.PublishDate = newsDto.PublishDate;
-            existingNews.Author = newsDto.Author ?? existingNews.Author;
 
-            bool isUpdated = await MainUnitOfWork.NewsRepository.UpdateAsync(news, AccountId);
+            if (! await MainUnitOfWork.NewsRepository.UpdateAsync(existingNews, AccountId))
+              throw new ApiException("Can't update", StatusCode.SERVER_ERROR);
 
-            if (isUpdated)
-            {
-                return ApiResponse<News>.Success(news);
-            }
-            else
-            {
-                return (ApiResponse<News>)ApiResponse.Failed();
-            }
+            return await GetNewsDetail(existingNews.Id);
         }
-        
+
     }
 }
