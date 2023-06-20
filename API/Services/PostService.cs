@@ -12,6 +12,7 @@ namespace API.Services
     public interface IPostService : IBaseService
     {
         Task<ApiResponses<PostDto>> GetPosts(PostQueryDto queryDto);
+        Task<ApiResponses<PostDto>> GetOwnPosts(PostQueryDto queryDto);
         Task<ApiResponse<DetailPostDto>> GetPost(Guid id);
         Task<ApiResponse<DetailPostDto>> Create(PostCreateDto postDto);
         Task<ApiResponse<DetailPostDto>> Update(Guid id, PostUpdateDto postUpdateDto);
@@ -96,6 +97,43 @@ namespace API.Services
             );
         }
 
+        public async Task<ApiResponses<PostDto>> GetOwnPosts(PostQueryDto queryDto)
+        {
+          // Get list
+          var posts = await MainUnitOfWork.PostRepository.FindResultAsync<PostDto>(new Expression<Func<Post, bool>>[]
+          {
+            x => !x.DeletedAt.HasValue,
+            x => x.CreatorId == AccountId
+          }, queryDto.OrderBy, queryDto.Skip(), queryDto.PageSize);
+
+          // Map to get CDC
+          posts.Items = await _mapperRepository.MapCreator(posts.Items.ToList());
+
+          // Map total like to each post
+          var likes = MainUnitOfWork.LikeRepository.GetQuery();
+
+          foreach (var post in posts.Items)
+          {
+            post.TotalLike = likes.Count(x => x!.PostId == post.Id);
+          }
+
+          // Map comments to each post
+          var comments = MainUnitOfWork.CommentRepository.GetQuery();
+
+          foreach (var post in posts.Items)
+          {
+            post.TotalComment = likes.Count(x => x!.PostId == post.Id);
+          }
+
+          return ApiResponses<PostDto>.Success(
+            posts.Items,
+            posts.TotalCount,
+            queryDto.PageSize,
+            queryDto.Skip(),
+            (int)Math.Ceiling(posts.TotalCount / (double)queryDto.PageSize)
+          );
+        }
+
         public async Task<ApiResponse<DetailPostDto>> GetPost(Guid id)
         {
             var post = await MainUnitOfWork.PostRepository.FindOneAsync<DetailPostDto>(
@@ -110,7 +148,7 @@ namespace API.Services
 
             post.TotalLike = MainUnitOfWork.LikeRepository.GetQuery().Count(x => !x!.DeletedAt.HasValue
                 && x.PostId == post.Id);
-            
+
             // Map CDC for the post
             post = await _mapperRepository.MapCreator(post);
 
@@ -202,7 +240,7 @@ namespace API.Services
             // Retrieve the updated total number of likes for the post
             var totalLikes = MainUnitOfWork.LikeRepository.GetQuery().Where(x =>
                 !x!.DeletedAt.HasValue);
-            
+
             var resultDto = new LikeResultDto
             {
                 TotalLikes = totalLikes.Count(x => x.PostId == post.Id)

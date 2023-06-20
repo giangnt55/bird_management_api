@@ -33,17 +33,17 @@ public class AuthenticationService : BaseService, IAuthenticationService
         {
             throw new ApiException(StatusCode.NOT_FOUND);
         }
-        
+
         // Check status
         if (user.Status == UserStatus.InActive)
             throw new ApiException(MessageKey.AccountNotActivated, StatusCode.NOT_ACTIVE);
-        
+
         // Check password
         if (!accountCredentialLoginDto.Password.VerifyPassword<User>(user.Salt, user.Password))
         {
             throw new ApiException("Invalid username or password", StatusCode.BAD_REQUEST);
         }
-        
+
         var claims = SetClaims(user);
         var accessExpiredAt = CurrentDate.AddMinutes(EnvironmentExtension.GetJwtAccessTokenExpires());
         var refreshExpiredAt = CurrentDate.AddMinutes(EnvironmentExtension.GetJwtResetTokenExpires());
@@ -77,7 +77,7 @@ public class AuthenticationService : BaseService, IAuthenticationService
             UserId = user.Id,
             //IsFirstLogin = (user.FirstLoginAt == null)
         };
-        
+
         return ApiResponse<AuthDto>.Success(verifyResponse);
     }
 
@@ -139,7 +139,7 @@ public class AuthenticationService : BaseService, IAuthenticationService
 
         if (existed.Any())
             throw new ApiException("This email has been used", StatusCode.BAD_REQUEST);
-        
+
         var user = registerDto.ProjectTo<RegisterDto, User>();
         var salt = SecurityExtension.GenerateSalt();
         user.Password = SecurityExtension.HashPassword<User>(registerDto.Password, salt);
@@ -170,7 +170,7 @@ public class AuthenticationService : BaseService, IAuthenticationService
             x => !x.DeletedAt.HasValue
         });
 
-        //Find account 
+        //Find account
         var account = await MainUnitOfWork.UserRepository.FindOneAsync(new Expression<Func<User, bool>>[]
         {
             x => x.Id == token!.UserId,
@@ -210,5 +210,5 @@ public class AuthenticationService : BaseService, IAuthenticationService
         }.ToList();
         return claims;
     }
-    
+
 }
