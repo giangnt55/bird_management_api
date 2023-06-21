@@ -33,11 +33,4 @@ namespace AppCore.Extensions
             smtp.Disconnect(true);
         }
     }
-
-    //// Tạo nội dung email
-    //int code = 0;
-    //body = "<h3>Gửi bạn " + name + "," + "</h3>" +
-    //            "<h4>Bạn đã yêu cầu resetpassword đây là code:" + "<h5>" + code + "</h5>" + "</h4>" +
-    //            "<h4>Thanks,</h4>" +
-    //            "<h4>BirdWeb</h4>";
 }
