@@ -85,7 +85,7 @@ namespace API.Services
 
             foreach (var post in posts.Items)
             {
-                post.TotalComment = likes.Count(x => x!.PostId == post.Id);
+                post.TotalComment = comments.Count(x => x!.PostId == post.Id);
             }
 
             return ApiResponses<PostDto>.Success(
@@ -122,7 +122,7 @@ namespace API.Services
 
           foreach (var post in posts.Items)
           {
-            post.TotalComment = likes.Count(x => x!.PostId == post.Id);
+            post.TotalComment = comments.Count(x => x!.PostId == post.Id);
           }
 
           return ApiResponses<PostDto>.Success(
