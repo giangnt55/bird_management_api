@@ -1,4 +1,5 @@
 ﻿using API.Dtos;
+using AppCore.Extensions;
 using AppCore.Models;
 using MainData;
 using MainData.Entities;
@@ -9,7 +10,8 @@ namespace API.Services
 {
     public interface ILikeService : IBaseService
     {
-        Task<ApiResponse<LikeResultDto>> LikePost(Guid id);
+        Task<ApiResponse<LikeResultDto>> LikePost(LikePostDto likeDto);
+        Task<ApiResponse> LikeComment(LikeCommentDto likeDto);
     }
 
     public class LikeService : BaseService, ILikeService
@@ -18,9 +20,41 @@ namespace API.Services
         {
         }
 
-        public async Task<ApiResponse<LikeResultDto>> LikePost(Guid id)
+        public async Task<ApiResponse> LikeComment(LikeCommentDto likeDto)
         {
-            var post = await MainUnitOfWork.PostRepository.FindOneAsync(id);
+            //var post = await MainUnitOfWork.PostRepository.FindOneAsync(likeDto.PostId);
+            var comment = await MainUnitOfWork.CommentRepository.FindOneAsync(likeDto.CommentId);
+            //if (post == null)
+            //    throw new ApiException("Post not found", StatusCode.NOT_FOUND);
+
+            if (comment == null)
+                throw new ApiException("Comment not found", StatusCode.NOT_FOUND);
+
+            var existingLike = await MainUnitOfWork.LikeRepository.FindOneAsync(new Expression<Func<Like, bool>>[]
+                {
+                    x => x.CommentId == comment.Id && x.CreatorId == AccountId
+                });
+
+            if (existingLike != null)
+            {
+                if (!await MainUnitOfWork.LikeRepository.DeleteAsync(existingLike, AccountId, CurrentDate))
+                    throw new ApiException("Failed to remove the like", StatusCode.SERVER_ERROR);
+            }
+            else
+            {
+                var like = likeDto.ProjectTo<LikeCommentDto, Like>();
+
+                if (!await MainUnitOfWork.LikeRepository.InsertAsync(like, AccountId, CurrentDate))
+                    throw new ApiException("Failed to like the post", StatusCode.SERVER_ERROR);
+            }
+
+            return ApiResponse.Success(); //CHUA BIET TRA VE GI
+
+        }
+
+        public async Task<ApiResponse<LikeResultDto>> LikePost(LikePostDto likeDto)
+        {
+            var post = await MainUnitOfWork.PostRepository.FindOneAsync(likeDto.PostId);
             if (post == null)
                 throw new ApiException("Post not found", StatusCode.NOT_FOUND);
 
@@ -38,13 +72,7 @@ namespace API.Services
             }
             else
             {
-                // Create a new Like entity
-                var like = new Like
-                {
-                    PostId = post.Id,
-                    CreatorId = AccountId,
-                    CreatedAt = CurrentDate
-                };
+                var like = likeDto.ProjectTo<LikePostDto, Like>();
 
                 if (!await MainUnitOfWork.LikeRepository.InsertAsync(like, AccountId, CurrentDate))
                     throw new ApiException("Failed to like the post", StatusCode.SERVER_ERROR);
