@@ -24,7 +24,10 @@ public class DetailCommentDto : BaseDto
 public class CommentCreateDto
 {
     public string Content { get; set; }
-    //public Guid? ReplyTo { get; set; }
+
+    public Guid PostId { get; set; }
+
+    public Guid ReplyTo { get; set; }
 }
 
 public class TotalCommentDto

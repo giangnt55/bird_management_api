@@ -12,7 +12,7 @@ namespace API.Services
 {
     public interface ICommentService : IBaseService
     {
-        Task<ApiResponse<TotalCommentDto>> AddComment(Guid postId, Guid replyTo, CommentCreateDto commentDto);
+        Task<ApiResponse<TotalCommentDto>> AddComment(CommentCreateDto commentDto);
         Task<ApiResponse<CommentCreateDto>> UpdateComment(Guid id, CommentCreateDto commentDto);
         Task<ApiResponse<CommentDeleteDto>> DeleteComment(Guid id, CommentDeleteDto commentDto);
     }
@@ -23,22 +23,22 @@ namespace API.Services
         {
         }
 
-        public async Task<ApiResponse<TotalCommentDto>> AddComment(Guid postId, Guid replyTo, CommentCreateDto commentDto)
+        public async Task<ApiResponse<TotalCommentDto>> AddComment(CommentCreateDto commentDto)
         {
-            var post = await MainUnitOfWork.PostRepository.FindOneAsync(postId);
-            var replyCmt = await MainUnitOfWork.CommentRepository.FindOneAsync(replyTo);
+            var post = await MainUnitOfWork.PostRepository.FindOneAsync(commentDto.PostId);
+            var replyCmt = await MainUnitOfWork.CommentRepository.FindOneAsync(commentDto.ReplyTo);
 
             if (post == null)
                 throw new ApiException("Post not found", StatusCode.NOT_FOUND);
 
-            if (replyCmt != null && replyCmt.PostId != postId)
+            if (replyCmt != null && replyCmt.PostId != post.Id)
                 throw new ApiException("Parent comment not found", StatusCode.NOT_FOUND);
 
             var comment = commentDto.ProjectTo<CommentCreateDto, Comment>();
 
-            if(replyCmt != null && post != null && replyCmt.PostId == postId)
+            if(replyCmt != null && post != null && replyCmt.PostId == post.Id)
             {
-                comment.ReplyTo = replyTo;
+                comment.ReplyTo = commentDto.ReplyTo;
             }  
 
             var success = await MainUnitOfWork.CommentRepository.InsertAsync(comment, AccountId, CurrentDate);

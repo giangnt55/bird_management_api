@@ -18,6 +18,27 @@ public class RegisterDto
     public string Password { get; set; } = string.Empty;
 }
 
+public class ResetPasswordDto
+{
+    [Required]
+    public string Email { get; set; } = string.Empty;
+}
+public class ResetTokenDto
+{
+    [Required] 
+    public string Email { get; set; }
+    [Required]
+    public string ResetCode { get; set; } = string.Empty;
+}
+public class UpdatePasswordDto
+{
+    [Required]
+    public string Email { get; set; }
+    [Required]
+    public string resetCode { get; set; }
+    [Required]
+    public string NewPassword { get; set; } =string.Empty;
+}
 public class AuthRefreshDto
 {
     [Required] public string RefreshToken { get; set; } = string.Empty;

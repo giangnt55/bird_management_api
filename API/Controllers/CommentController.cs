@@ -19,9 +19,9 @@ namespace API.Controllers
 
         [HttpPost]
         [SwaggerOperation("Comment")]
-        public async Task<ApiResponse> Comment(Guid postId, Guid replyTo, CommentCreateDto commentDto)
+        public async Task<ApiResponse> Comment(CommentCreateDto commentDto)
         {
-            return await _service.AddComment(postId, replyTo, commentDto);
+            return await _service.AddComment(commentDto);
         }
 
         [HttpPut]
