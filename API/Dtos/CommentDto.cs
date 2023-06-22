@@ -31,3 +31,8 @@ public class TotalCommentDto
 {
     public int TotalComemnts { get; set; }
 }
+
+public class CommentDeleteDto
+{
+    public Guid PostId { get; set; }
+}
