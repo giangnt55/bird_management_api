@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using AppCore.Extensions;
 using AppCore.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,7 +17,20 @@ public interface IBaseRepository<TEntity> where TEntity : BaseEntity
 
     public Task<List<TEntity?>> FindAsync(
         Expression<Func<TEntity, bool>>[]? filters,
+        string? orderBy);
+    
+    public Task<List<TDto>> FindAsync<TDto>(
+        Expression<Func<TEntity, bool>>[]? filters,
         string orderBy);
+    
+    public Task<List<TDto>> FindAsync<TDto>(
+        Expression<Func<TEntity, bool>>[]? filters,
+        string orderBy,
+        int skip,
+        int limit);
+
+    public Task<TDto?> FindOneAsync<TDto>(Expression<Func<TEntity, bool>>[]? filters,
+        string? orderBy = null);
 
     public Task<int> CountAsync(
         Expression<Func<TEntity, bool>>[]? filters);
@@ -28,6 +42,12 @@ public interface IBaseRepository<TEntity> where TEntity : BaseEntity
     public Task<bool> IsAlreadyExistAsync(IEnumerable<Guid> systemIds);
 
     public Task<FindResult<TEntity>> FindResultAsync(
+        Expression<Func<TEntity, bool>>[]? filters,
+        string orderBy,
+        int skip,
+        int limit);
+    
+    public Task<FindResult<TDto>> FindResultAsync<TDto>(
         Expression<Func<TEntity, bool>>[]? filters,
         string orderBy,
         int skip,
@@ -79,7 +99,7 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
         return await query.ToListAsync();
     }
 
-    public async Task<List<TEntity?>> FindAsync(Expression<Func<TEntity, bool>>[]? filters, string orderBy)
+    public async Task<List<TEntity?>> FindAsync(Expression<Func<TEntity, bool>>[]? filters, string? orderBy)
     {
         IQueryable<TEntity?> query = _dbSet;
         query = query.Where(x => x != null && !x.DeletedAt.HasValue);
@@ -245,12 +265,83 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
         return await _unitOfWork.CommitTransactionAsync();
     }
 
-    private static IQueryable<TEntity?> OrderBy(IQueryable<TEntity?> query, string orderBy)
+    private static IQueryable<TEntity> OrderBy(IQueryable<TEntity?> query, string orderBy)
     {
         var propertyName = orderBy.Split(" ")[0];
         query = orderBy.Contains("desc")
             ? query.OrderByDescending(x => EF.Property<TEntity>(x!, propertyName))
             : query.OrderBy(x => EF.Property<TEntity>(x!, propertyName));
-        return query;
+        return query!;
+    }
+    
+    public async Task<List<TDto>> FindAsync<TDto>(Expression<Func<TEntity, bool>>[]? filters, string? orderBy)
+    {
+        IQueryable<TEntity> query = _dbSet;
+        query = query.Where(x => !x.DeletedAt.HasValue);
+        if (filters != null && filters.Any())
+            query = filters.Aggregate(query, (current, filter) => current.Where(filter));
+
+        if (!string.IsNullOrEmpty(orderBy))
+            query = OrderBy(query, orderBy);
+
+        var result = await query.ToListAsync();
+        return result.ProjectTo<TEntity, TDto>();
+    }
+    
+    public async Task<List<TDto>> FindAsync<TDto>(Expression<Func<TEntity, bool>>[]? filters, string orderBy, int skip,
+        int limit)
+    {
+        IQueryable<TEntity> query = _dbSet;
+        query = query.Where(x => !x.DeletedAt.HasValue);
+        if (filters != null && filters.Any())
+            query = filters.Aggregate(query, (current, filter) => current.Where(filter));
+
+        if (!string.IsNullOrEmpty(orderBy))
+            query = OrderBy(query, orderBy);
+
+        if (skip > 0)
+            query = query.Skip(skip);
+
+        if (limit > 0)
+            query = query.Take(limit);
+
+        var result = await query.ToListAsync();
+        return result.ProjectTo<TEntity, TDto>();
+    }
+    
+    public async Task<FindResult<TDto>> FindResultAsync<TDto>(Expression<Func<TEntity, bool>>[]? filters, string orderBy,
+        int skip, int limit)
+    {
+        IQueryable<TEntity> query = _dbSet;
+        query = query.Where(x => !x.DeletedAt.HasValue);
+        if (filters != null && filters.Any())
+            query = filters.Aggregate(query, (current, filter) => current.Where(filter));
+
+        if (!string.IsNullOrEmpty(orderBy))
+            query = OrderBy(query, orderBy);
+
+        var totalCount = await query.LongCountAsync();
+        if (skip > 0)
+            query = query.Skip(skip);
+
+        if (limit > 0)
+            query = query.Take(limit);
+
+        var result = await query.ToListAsync();
+        return FindResult<TDto>.Success(result.ProjectTo<TEntity, TDto>(), totalCount);
+    }
+    
+    public async Task<TDto?> FindOneAsync<TDto>(Expression<Func<TEntity, bool>>[]? filters, string? orderBy = null)
+    {
+        IQueryable<TEntity> query = _dbSet;
+        query = query.Where(x => !x.DeletedAt.HasValue);
+        if (filters != null && filters.Any())
+            query = filters.Aggregate(query, (current, filter) => current.Where(filter));
+
+        if (!string.IsNullOrEmpty(orderBy))
+            query = OrderBy(query, orderBy);
+
+        var result = await query.FirstOrDefaultAsync();
+        return result!.ProjectTo<TEntity, TDto>();
     }
 }

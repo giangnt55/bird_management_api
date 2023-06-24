@@ -7,20 +7,58 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace API.Controllers;
 
-public class AuthenticationController : BaseController
+public class AuthController : BaseController
 {
     private readonly IAuthenticationService _authenticationService;
 
-    public AuthenticationController(IAuthenticationService authenticationService)
+    public AuthController(IAuthenticationService authenticationService)
     {
         _authenticationService = authenticationService;
     }
 
-    [HttpPost]
+    [HttpPost("sign-in")]
     [AllowAnonymous]
     [SwaggerOperation("Login api")]
     public async Task<ApiResponse<AuthDto>> SignIn(AccountCredentialLoginDto accountCredentialLoginDto)
     {
         return await _authenticationService.SignIn(accountCredentialLoginDto);
+    }
+    
+    [HttpPost("sign-out")]
+    public async Task<ApiResponse> Logout()
+    {
+        return await _authenticationService.RevokeToken();
+    }
+    
+    [HttpPost("refresh-token")]
+    [AllowAnonymous]
+    [SwaggerOperation("Refresh token")]
+    public async Task<ApiResponse<AuthDto>> SignIn(AuthRefreshDto authRefreshDto)
+    {
+        return await _authenticationService.RefreshToken(authRefreshDto);
+    }
+    
+    [HttpPost("register")]
+    [AllowAnonymous]
+    [SwaggerOperation("Register account")]
+    public async Task<ApiResponse> Register(RegisterDto registerDto)
+    {
+        return await _authenticationService.Register(registerDto);
+    }
+
+    [HttpPost("forget-pasword")]
+    [AllowAnonymous]
+    [SwaggerOperation("forget password account")]
+    public async Task<ApiResponse> Forgetpassword(ResetPasswordDto resetPassword)
+    {
+        return await _authenticationService.ResetPasswordByEmail(resetPassword);
+    }
+
+    [HttpPost("reset-password")]
+    [AllowAnonymous]
+    [SwaggerOperation("reset password account")]
+    public async Task<ApiResponse> ResetPassword(UpdatePasswordDto updatePasswordDto)
+    {
+        return await _authenticationService.ResetPasswordByCode(updatePasswordDto);
     }
 }

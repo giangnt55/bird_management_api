@@ -18,24 +18,23 @@ public class User : BaseEntity
     public string? Salt { get; set; }
 
     //Relationship
-    public virtual IEnumerable<Token> Tokens { get; set; } = new List<Token>();
-    public virtual IEnumerable<Notification> Notifications { get; set; } = new List<Notification>();
-    public virtual IEnumerable<Article> Articles { get; set; } = new List<Article>();
-    public virtual IEnumerable<Activity> Activities { get; set; } = new List<Activity>();
-    public virtual IEnumerable<ActivityFeedBack> ActivityFeedBacks { get; set; } = new List<ActivityFeedBack>();
-    public virtual IEnumerable<Attendance> Attendances { get; set; } = new List<Attendance>();
-    public virtual IEnumerable<Post> Posts { get; set; } = new List<Post>();
-    public virtual IEnumerable<Interaction> Interactions { get; set; } = new List<Interaction>();
+    public virtual IEnumerable<Token>? Tokens { get; set; }
+    public virtual IEnumerable<Notification>? Notifications { get; set; } 
+    public virtual IEnumerable<Comment>? Comments { get; set; }
+    public virtual IEnumerable<Like>? Likes { get; set; } 
+    public virtual IEnumerable<Report>? Reports { get; set; } 
+    public virtual IEnumerable<Participant>? Participants { get; set; } 
+    public virtual IEnumerable<Post>? Posts { get; set; } 
 }
 
 public enum UserRole
 {
-    Member = 1, Guest = 2, Admin = 3
+    Member = 1, Staff = 2, Manager = 3, Admin = 4
 }
 
 public enum UserStatus
 {
-    Active = 1, InActive = 2 
+    Active = 1, InActive = 2, Blocked = 3
 }
 
 public class UserConfig : IEntityTypeConfiguration<User>
@@ -51,20 +50,35 @@ public class UserConfig : IEntityTypeConfiguration<User>
         builder.Property(x => x.Username).IsRequired().HasMaxLength(50);;
         builder.Property(x => x.Password).IsRequired();
         builder.Property(x => x.Salt).IsRequired();
-        builder.HasMany(u => u.Tokens);
-        builder.HasMany(u => u.Notifications).WithOne(x => x.User)
-            .HasForeignKey(x => x.UserId);
-        builder.HasMany(u => u.Articles).WithOne(x => x.Creator)
-            .HasForeignKey(x => x.CreatorId);
-        builder.HasMany(u => u.Activities).WithOne(x => x.Host)
-            .HasForeignKey(x => x.CreatorId);
-        builder.HasMany(u => u.ActivityFeedBacks).WithOne(x => x.User)
-            .HasForeignKey(x => x.CreatorId);
-        builder.HasMany(u => u.Attendances).WithOne(x => x.User)
-            .HasForeignKey(x => x.UserId);
-        builder.HasMany(u => u.Posts).WithOne(x => x.Creator)
-            .HasForeignKey(x => x.CreatorId);
-        builder.HasMany(u => u.Interactions).WithOne(x => x.User)
-            .HasForeignKey(x => x.CreatorId);
+        
+        //Relationship
+        builder.HasMany(u => u.Tokens)
+            .WithOne()
+            .HasForeignKey(t => t.UserId);;
+
+        builder.HasMany(u => u.Notifications)
+            .WithOne(x => x.User)
+            .HasForeignKey(t => t.UserId);
+        
+        builder.HasMany(u => u.Comments)
+            .WithOne(x => x.User)
+            .HasForeignKey(t => t.CreatorId);
+        
+        builder.HasMany(u => u.Likes)
+            .WithOne(x => x.User)
+            .HasForeignKey(t => t.CreatorId);
+        
+        builder.HasMany(u => u.Reports)
+            .WithOne(x => x.User)
+            .HasForeignKey(t => t.CreatorId);
+        
+        builder.HasMany(u => u.Participants)
+            .WithOne(x => x.User)
+            .HasForeignKey(t => t.CreatorId);
+        
+        builder.HasMany(u => u.Posts)
+            .WithOne(x => x.User)
+            .HasForeignKey(t => t.CreatorId);
+        
     }
 }
