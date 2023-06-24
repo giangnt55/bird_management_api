@@ -19,9 +19,9 @@ namespace API.Controllers
 
         [HttpPost]
         [SwaggerOperation("Comment")]
-        public async Task<ApiResponse> Comment(Guid postId, CommentCreateDto commentDto)
+        public async Task<ApiResponse> Comment(CommentCreateDto commentDto)
         {
-            return await _service.AddComment(postId, commentDto);
+            return await _service.AddComment(commentDto);
         }
 
         [HttpPut]
@@ -33,9 +33,9 @@ namespace API.Controllers
 
         [HttpDelete]
         [SwaggerOperation("Delete comment")]
-        public async Task<ApiResponse> DeleteComment(Guid id)
+        public async Task<ApiResponse> DeleteComment(Guid id, CommentDeleteDto commentDto)
         {
-            return await _service.DeleteComment(id);
+            return await _service.DeleteComment(id, commentDto);
         }
     }
 }

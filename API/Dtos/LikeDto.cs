@@ -2,9 +2,15 @@
 
 namespace API.Dtos;
 
-public class LikeDto
+public class LikePostDto
 {
     public Guid PostId { get; set; }
+}
+
+public class LikeCommentDto
+{
+    //public Guid PostId { get; set; }
+    public Guid CommentId { get; set; }
 }
 
 public class LikeResultDto

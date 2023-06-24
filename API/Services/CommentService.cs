@@ -1,4 +1,5 @@
 ﻿using API.Dtos;
+using AppCore.Extensions;
 using AppCore.Models;
 using MainData;
 using MainData.Entities;
@@ -11,9 +12,9 @@ namespace API.Services
 {
     public interface ICommentService : IBaseService
     {
-        Task<ApiResponse<TotalCommentDto>> AddComment(Guid postId, CommentCreateDto commentDto);
+        Task<ApiResponse<TotalCommentDto>> AddComment(CommentCreateDto commentDto);
         Task<ApiResponse<CommentCreateDto>> UpdateComment(Guid id, CommentCreateDto commentDto);
-        Task<ApiResponse> DeleteComment(Guid id);
+        Task<ApiResponse<CommentDeleteDto>> DeleteComment(Guid id, CommentDeleteDto commentDto);
     }
 
     public class CommentService : BaseService, ICommentService
@@ -22,20 +23,23 @@ namespace API.Services
         {
         }
 
-        public async Task<ApiResponse<TotalCommentDto>> AddComment(Guid postId, CommentCreateDto commentDto)
+        public async Task<ApiResponse<TotalCommentDto>> AddComment(CommentCreateDto commentDto)
         {
-            var post = await MainUnitOfWork.PostRepository.FindOneAsync(postId);
+            var post = await MainUnitOfWork.PostRepository.FindOneAsync(commentDto.PostId);
+            var replyCmt = await MainUnitOfWork.CommentRepository.FindOneAsync(commentDto.ReplyTo);
 
             if (post == null)
                 throw new ApiException("Post not found", StatusCode.NOT_FOUND);
 
-            var comment = new Comment
+            if (replyCmt != null && replyCmt.PostId != post.Id)
+                throw new ApiException("Parent comment not found", StatusCode.NOT_FOUND);
+
+            var comment = commentDto.ProjectTo<CommentCreateDto, Comment>();
+
+            if(replyCmt != null && post != null && replyCmt.PostId == post.Id)
             {
-                Content = commentDto.Content,
-                PostId = postId,
-                CreatorId = AccountId,
-                CreatedAt = CurrentDate
-            };
+                comment.ReplyTo = commentDto.ReplyTo;
+            }  
 
             var success = await MainUnitOfWork.CommentRepository.InsertAsync(comment, AccountId, CurrentDate);
 
@@ -51,20 +55,22 @@ namespace API.Services
             return ApiResponse<TotalCommentDto>.Success(total);
         }
 
-        public async Task<ApiResponse> DeleteComment(Guid id)
+        public async Task<ApiResponse<CommentDeleteDto>> DeleteComment(Guid id, CommentDeleteDto commentDto)
         {
+            var existingPost = await MainUnitOfWork.PostRepository.FindOneAsync(commentDto.PostId);
             var existingComment = await MainUnitOfWork.CommentRepository.FindOneAsync(id);
+
             if (existingComment == null)
                 throw new ApiException("Not found this comment", StatusCode.NOT_FOUND);
 
-            if (existingComment.CreatorId != AccountId)
+            if (existingComment.CreatorId != AccountId || existingPost.CreatorId != AccountId)
                 throw new ApiException("Can't not delete other's commemnt", StatusCode.BAD_REQUEST);
 
             var result = await MainUnitOfWork.CommentRepository.DeleteAsync(existingComment, AccountId, CurrentDate);
             if (!result)
                 throw new ApiException("Can't not delete", StatusCode.SERVER_ERROR);
 
-            return ApiResponse.Success();
+            return (ApiResponse<CommentDeleteDto>)ApiResponse.Success();
         }
 
         public async Task<ApiResponse<CommentCreateDto>> UpdateComment(Guid id, CommentCreateDto commentDto)
