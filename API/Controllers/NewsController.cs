@@ -1,7 +1,6 @@
 ﻿using API.Dtos;
 using API.Services;
 using AppCore.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -17,31 +16,38 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [SwaggerOperation("Get list ...")]
-        public async Task<ApiResponses<NewsDto>> GetListNews([FromQuery] NewsQueryDto queryDto)
+        [SwaggerOperation("Get list news")]
+        public async Task<ApiResponses<NewsDto>> GetAllNews([FromQuery] NewsQueryDto queryDto)
         {
-            return await _service.GetNews(queryDto);
+            return await _service.GetAllNews(queryDto);
         }
 
         [HttpPost]
-        [SwaggerOperation("Insert ...")]
-        public async Task<ApiResponse<bool>> InsertNews(NewsCreateDto newsDto)
+        [SwaggerOperation("Insert news")]
+        public async Task<ApiResponse<NewsDto>> InsertNews(NewsCreateDto newsDto)
         {
             return await _service.InsertNews(newsDto);
         }
 
         [HttpPut]
-        [SwaggerOperation("Update ...")]
-        public async Task<ApiResponse<bool>> UpdateNews(Guid Id, NewsUpdateDto newsDto)
+        [SwaggerOperation("Update news")]
+        public async Task<ApiResponse<NewsDto>> UpdateNews(Guid id, NewsUpdateDto newsDto)
         {
-            return await _service.UpdateNews(Id, newsDto);
+            return await _service.UpdateNews(id, newsDto);
         }
 
         [HttpDelete]
-        [SwaggerOperation("Delete ...")]
-        public async Task<ApiResponse<bool>> DeleteNews(NewsDeleteDto newsDto)
+        [SwaggerOperation("Delete news")]
+        public async Task<ApiResponse> DeleteNews(GetNewsDto newsDto)
         {
             return await _service.DeleteNews(newsDto);
+        }
+
+        [HttpGet("{id}")]
+        [SwaggerOperation("Detail news")]
+        public async Task<ApiResponse<NewsDto>> GetNewsDetail(Guid id)
+        {
+            return await _service.GetNewsDetail(id);
         }
     }
 }

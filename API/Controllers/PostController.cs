@@ -1,7 +1,6 @@
 ﻿using API.Dtos;
 using API.Services;
 using AppCore.Models;
-using MainData.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -23,6 +22,13 @@ namespace API.Controllers
             return await _service.GetPosts(queryDto);
         }
 
+        [HttpGet("own")]
+        [SwaggerOperation("Get own posts")]
+        public async Task<ApiResponses<PostDto>> GetOwnPosts([FromQuery] PostQueryDto queryDto)
+        {
+          return await _service.GetOwnPosts(queryDto);
+        }
+
         [HttpPost]
         [SwaggerOperation("Create new post")]
         public async Task<ApiResponse> InsertPost(PostCreateDto postDto)
@@ -36,14 +42,14 @@ namespace API.Controllers
         {
             return await _service.GetPost(id);
         }
-        
+
         [HttpPut("{id:guid}")]
         [SwaggerOperation("Update post information")]
         public async Task<ApiResponse<DetailPostDto>> Update(Guid id, PostUpdateDto postUpdateDto)
         {
             return await _service.Update(id, postUpdateDto);
         }
-        
+
         [HttpDelete("{id:guid}")]
         [SwaggerOperation("Delete post")]
         public async Task<ApiResponse> Delete(Guid id)

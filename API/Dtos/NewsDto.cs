@@ -13,28 +13,23 @@ namespace API.Dtos
         public string Author { get; set; } = string.Empty;
     }
 
-    public class NewsCreateDto : BaseDto
-    {
-        public Guid Id { get; set; }
-        public string Title { get; set; } = string.Empty;
-        public NewsType Type { get; set; }
-        public string Content { get; set; } = string.Empty;
-        public string? CoverImage { get; set; }
-        public DateTime PublishDate { get; set; }
-        public string Author { get; set; } = string.Empty;
-    }
-
-    public class NewsUpdateDto : BaseDto
+    public class NewsCreateDto
     {
         public string Title { get; set; } = string.Empty;
         public NewsType Type { get; set; }
         public string Content { get; set; } = string.Empty;
         public string? CoverImage { get; set; }
-        public DateTime PublishDate { get; set; }
-        public string Author { get; set; } = string.Empty;
     }
 
-    public class NewsDeleteDto
+    public class NewsUpdateDto
+    {
+        public string? Title { get; set; }
+        public NewsType? Type { get; set; }
+        public string? Content { get; set; }
+        public string? CoverImage { get; set; }
+    }
+
+    public class GetNewsDto
     {
         public Guid Id { get; set; }
     }
@@ -43,4 +38,6 @@ namespace API.Dtos
     {
         public string? Title { get; set; }
     }
+
+
 }

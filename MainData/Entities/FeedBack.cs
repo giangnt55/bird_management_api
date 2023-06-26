@@ -9,13 +9,16 @@ public class FeedBack : BaseEntity
     public Guid ParticipantId { get; set; }
     public Guid EventId { get; set; }
     public string? Content { get; set; }
-    public int? Rating { get; set; }
+    public RateStar? Rating { get; set; }
     
     //Relationship
     public virtual Event? Event { get; set; }
     public virtual Participant? Participant { get; set; }
 }
-
+public enum RateStar
+{
+    Excellent = 5, Good = 4, Normal = 3, Bad = 2, VeryBad=1
+}
 public class FeedBackConfig : IEntityTypeConfiguration<FeedBack>
 {
     public void Configure(EntityTypeBuilder<FeedBack> builder)

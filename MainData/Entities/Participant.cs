@@ -11,8 +11,8 @@ public class Participant : BaseEntity
     public ParticipantRole Role { get; set; }
     
     //Relationship
-    public virtual User User { get; set; } = new User();
-    public virtual Event Event { get; set; } = new Event();
+    public virtual User? User { get; set; }
+    public virtual Event? Event { get; set; }
     public virtual IEnumerable<FeedBack>? FeedBacks { get; set; }
 }
 

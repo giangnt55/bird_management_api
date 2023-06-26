@@ -2,7 +2,12 @@
 
 namespace API.Dtos;
 
-public class LikeDto : BaseDto
+public class LikeDto
 {
-    
+    public Guid PostId { get; set; }
+}
+
+public class LikeResultDto
+{
+    public int TotalLikes { get; set; }
 }
