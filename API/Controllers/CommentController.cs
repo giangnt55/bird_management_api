@@ -6,9 +6,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class CommentController : ControllerBase
+  public class CommentController : BaseController
     {
         private readonly ICommentService _service;
 
@@ -36,6 +34,13 @@ namespace API.Controllers
         public async Task<ApiResponse> DeleteComment(Guid id)
         {
             return await _service.DeleteComment(id);
+        }
+
+        [HttpGet("post/{postId:guid}")]
+        [SwaggerOperation("Get comment by post Id")]
+        public async Task<ApiResponses<CommentDto>> GetCommentByPost(Guid postId)
+        {
+          return await _service.GetCommentByPost(postId);
         }
     }
 }
