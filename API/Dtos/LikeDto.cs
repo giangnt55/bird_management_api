@@ -1,10 +1,16 @@
-﻿using AppCore.Models;
+﻿using API.Controllers;
+using AppCore.Models;
 
 namespace API.Dtos;
 
-public class LikeDto
+public class LikeDto : BaseDto
 {
-    public Guid PostId { get; set; }
+}
+
+public class CreateLikeDto
+{
+    public Guid? PostId { get; set; }
+    public Guid? CommentId { get; set; }
 }
 
 public class LikeResultDto

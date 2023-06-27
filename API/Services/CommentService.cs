@@ -12,8 +12,8 @@ namespace API.Services
 {
     public interface ICommentService : IBaseService
     {
-        Task<ApiResponse<TotalCommentDto>> AddComment(Guid postId, CommentCreateDto commentDto);
-        Task<ApiResponse<CommentCreateDto>> UpdateComment(Guid id, CommentCreateDto commentDto);
+        Task<ApiResponse> AddComment(CommentCreateDto commentDto);
+       // Task<ApiResponse<CommentCreateDto>> UpdateComment(Guid id, CommentCreateDto commentDto);
         Task<ApiResponse> DeleteComment(Guid id);
         Task<ApiResponses<CommentDto>> GetCommentByPost(Guid postId);
     }
@@ -24,33 +24,34 @@ namespace API.Services
         {
         }
 
-        public async Task<ApiResponse<TotalCommentDto>> AddComment(Guid postId, CommentCreateDto commentDto)
+        public async Task<ApiResponse> AddComment(CommentCreateDto commentDto)
         {
-            var post = await MainUnitOfWork.PostRepository.FindOneAsync(postId);
+          var post = await MainUnitOfWork.PostRepository.FindOneAsync(new Expression<Func<Post, bool>>[]
+          {
+            x => x.Id == commentDto.PostId,
+            x => !x.DeletedAt.HasValue
+          });
 
-            if (post == null)
-                throw new ApiException("Post not found", StatusCode.NOT_FOUND);
+          var targetComment = await MainUnitOfWork.CommentRepository.FindOneAsync(new Expression<Func<Comment, bool>>[]
+          {
+            x => x.Id == commentDto.ReplyTo,
+            x => !x.DeletedAt.HasValue
+          });
 
-            var comment = new Comment
-            {
-                Content = commentDto.Content,
-                PostId = postId,
-                CreatorId = AccountId,
-                CreatedAt = CurrentDate
-            };
+          if (post == null && targetComment == null)
+            throw new ApiException("Not found this content", StatusCode.NOT_FOUND);
 
-            var success = await MainUnitOfWork.CommentRepository.InsertAsync(comment, AccountId, CurrentDate);
+          var comment = new Comment
+          {
+            PostId = commentDto.PostId,
+            ReplyTo = commentDto.ReplyTo,
+            Content = commentDto.Content
+          };
 
-            if (!success)
-                throw new ApiException("Failed to add comment", StatusCode.SERVER_ERROR);
+          if (!await MainUnitOfWork.CommentRepository.InsertAsync(comment, AccountId, CurrentDate))
+              throw new ApiException("Failed to add comment", StatusCode.SERVER_ERROR);
 
-            var totalComment = MainUnitOfWork.CommentRepository.GetQuery().Where(X =>
-                !X!.DeletedAt.HasValue);
-
-            var total = new TotalCommentDto { TotalComemnts = totalComment.Count(x => x.PostId == post.Id) };
-
-
-            return ApiResponse<TotalCommentDto>.Success(total);
+          return ApiResponse.Success();
         }
 
         public async Task<ApiResponse> DeleteComment(Guid id)
@@ -106,24 +107,24 @@ namespace API.Services
           return ApiResponses<CommentDto>.Success(comments);
         }
 
-        public async Task<ApiResponse<CommentCreateDto>> UpdateComment(Guid id, CommentCreateDto commentDto)
-        {
-            var existingComment = await MainUnitOfWork.CommentRepository.FindOneAsync(id);
-
-            if (existingComment == null)
-                throw new ApiException("Comment not found", StatusCode.NOT_FOUND);
-
-            if (existingComment.CreatorId != AccountId)
-                throw new ApiException("Can't not update other's comment", StatusCode.BAD_REQUEST);
-
-            existingComment.Content = commentDto.Content ?? existingComment.Content;
-
-            var result = await MainUnitOfWork.CommentRepository.UpdateAsync(existingComment, AccountId, CurrentDate);
-
-            if (!result)
-                throw new ApiException("Can't not update", StatusCode.SERVER_ERROR);
-
-            return (ApiResponse<CommentCreateDto>)ApiResponse.Success();
-        }
+        // public async Task<ApiResponse<CommentCreateDto>> UpdateComment(Guid id, CommentCreateDto commentDto)
+        // {
+        //     var existingComment = await MainUnitOfWork.CommentRepository.FindOneAsync(id);
+        //
+        //     if (existingComment == null)
+        //         throw new ApiException("Comment not found", StatusCode.NOT_FOUND);
+        //
+        //     if (existingComment.CreatorId != AccountId)
+        //         throw new ApiException("Can't not update other's comment", StatusCode.BAD_REQUEST);
+        //
+        //     existingComment.Content = commentDto.Content ?? existingComment.Content;
+        //
+        //     var result = await MainUnitOfWork.CommentRepository.UpdateAsync(existingComment, AccountId, CurrentDate);
+        //
+        //     if (!result)
+        //         throw new ApiException("Can't not update", StatusCode.SERVER_ERROR);
+        //
+        //     return (ApiResponse<CommentCreateDto>)ApiResponse.Success();
+        // }
     }
 }

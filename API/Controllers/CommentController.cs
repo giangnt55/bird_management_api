@@ -17,17 +17,17 @@ namespace API.Controllers
 
         [HttpPost]
         [SwaggerOperation("Comment")]
-        public async Task<ApiResponse> Comment(Guid postId, CommentCreateDto commentDto)
+        public async Task<ApiResponse> Comment(CommentCreateDto commentDto)
         {
-            return await _service.AddComment(postId, commentDto);
+            return await _service.AddComment(commentDto);
         }
 
-        [HttpPut]
-        [SwaggerOperation("Update comment")]
-        public async Task<ApiResponse> UpdateComment(Guid id, CommentCreateDto commentDto)
-        {
-            return await _service.UpdateComment(id, commentDto);
-        }
+        // [HttpPut]
+        // [SwaggerOperation("Update comment")]
+        // public async Task<ApiResponse> UpdateComment(Guid id, CommentCreateDto commentDto)
+        // {
+        //     return await _service.UpdateComment(id, commentDto);
+        // }
 
         [HttpDelete]
         [SwaggerOperation("Delete comment")]
