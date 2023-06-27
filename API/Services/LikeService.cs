@@ -79,11 +79,11 @@ public class LikeService : BaseService, ILikeService
   {
     var like = await MainUnitOfWork.LikeRepository.FindOneAsync(new Expression<Func<Like, bool>>[]
     {
-      x=> !x.DeletedAt.HasValue,
+      x => !x.DeletedAt.HasValue,
       x => x.CreatorId == AccountId &&
            (
              (createLikeDto.PostId != null && x.PostId == createLikeDto.PostId) ||
-             (createLikeDto.CommentId != null && x.CommentId == createLikeDto.PostId)
+             (createLikeDto.CommentId != null && x.CommentId == createLikeDto.CommentId)
            )
     });
 

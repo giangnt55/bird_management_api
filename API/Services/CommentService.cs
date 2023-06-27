@@ -12,7 +12,8 @@ namespace API.Services
 {
     public interface ICommentService : IBaseService
     {
-        Task<ApiResponse> AddComment(CommentCreateDto commentDto);
+        Task<ApiResponse<DetailCommentDto>> AddComment(CommentCreateDto commentDto);
+        Task<ApiResponse<DetailCommentDto>> GetDetail(Guid commentId);
        // Task<ApiResponse<CommentCreateDto>> UpdateComment(Guid id, CommentCreateDto commentDto);
         Task<ApiResponse> DeleteComment(Guid id);
         Task<ApiResponses<CommentDto>> GetCommentByPost(Guid postId);
@@ -24,7 +25,7 @@ namespace API.Services
         {
         }
 
-        public async Task<ApiResponse> AddComment(CommentCreateDto commentDto)
+        public async Task<ApiResponse<DetailCommentDto>> AddComment(CommentCreateDto commentDto)
         {
           var post = await MainUnitOfWork.PostRepository.FindOneAsync(new Expression<Func<Post, bool>>[]
           {
@@ -43,6 +44,7 @@ namespace API.Services
 
           var comment = new Comment
           {
+            Id = Guid.NewGuid(),
             PostId = commentDto.PostId,
             ReplyTo = commentDto.ReplyTo,
             Content = commentDto.Content
@@ -51,7 +53,49 @@ namespace API.Services
           if (!await MainUnitOfWork.CommentRepository.InsertAsync(comment, AccountId, CurrentDate))
               throw new ApiException("Failed to add comment", StatusCode.SERVER_ERROR);
 
-          return ApiResponse.Success();
+          return await GetDetail(comment.Id);
+        }
+
+        public async Task<ApiResponse<DetailCommentDto>> GetDetail(Guid commentId)
+        {
+          var comment = await MainUnitOfWork.CommentRepository.FindOneAsync<DetailCommentDto>(new Expression<Func<Comment, bool>>[]
+          {
+            x => x.Id == commentId,
+            x => !x.DeletedAt.HasValue
+          });
+
+          if (comment == null)
+            throw new ApiException("Not found comment", StatusCode.NOT_FOUND);
+
+          // Map CDC for comments
+          comment = await _mapperRepository.MapCreator(comment);
+
+          // Map replies for each comment
+          var commentDataset = MainUnitOfWork.CommentRepository.GetQuery().Where(x =>
+            !x!.DeletedAt.HasValue);
+          var likeDataSet = MainUnitOfWork.LikeRepository.GetQuery().Where(x =>
+            !x!.DeletedAt.HasValue);
+
+            var repliesOfComments = commentDataset.Where(x => x!.ReplyTo == comment.Id)
+              .ToList()!.ProjectTo<Comment, CommentDto>();
+
+            foreach (var reply in repliesOfComments)
+            {
+              reply.TotalLike = likeDataSet.Count(x => x!.CommentId == reply.Id);
+            }
+
+            // Map CDC for replies
+            repliesOfComments = await _mapperRepository.MapCreator(repliesOfComments);
+            comment.Replies = repliesOfComments;
+
+            // Map total like for comment
+            comment.TotalLike = likeDataSet.Count(x => x!.CommentId == comment.Id);
+
+            comment.IsLiked = likeDataSet.Any(x => !x!.DeletedAt.HasValue
+                                                   && x.CommentId == comment.Id
+                                                   && x.CreatorId == AccountId);
+
+            return ApiResponse<DetailCommentDto>.Success(comment);
         }
 
         public async Task<ApiResponse> DeleteComment(Guid id)
@@ -79,6 +123,8 @@ namespace API.Services
                 x => x.PostId == postId,
             }, null);
 
+          // Map CDC for comments
+          comments = await _mapperRepository.MapCreator(comments);
 
           // Map replies for each comment
           var commentDataset = MainUnitOfWork.CommentRepository.GetQuery().Where(x =>
@@ -93,7 +139,7 @@ namespace API.Services
 
             foreach (var reply in repliesOfComments)
             {
-              reply.TotalLike = likeDataSet.Count(x => x!.PostId == reply.Id);
+              reply.TotalLike = likeDataSet.Count(x => x!.CommentId == reply.Id);
             }
 
             // Map CDC for replies
@@ -101,7 +147,11 @@ namespace API.Services
             comment.Replies = repliesOfComments;
 
             // Map total like for comment
-            comment.TotalLike = likeDataSet.Count(x => x!.PostId == comment.Id);
+            comment.TotalLike = likeDataSet.Count(x => x!.CommentId == comment.Id);
+
+            comment.IsLiked = likeDataSet.Any(x => !x!.DeletedAt.HasValue
+                                                   && x.CommentId == comment.Id
+                                                   && x.CreatorId == AccountId);
           }
 
           return ApiResponses<CommentDto>.Success(comments);
