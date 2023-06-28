@@ -6,8 +6,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppCore", "AppCore\AppCore.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MainData", "MainData\MainData.csproj", "{4AB77306-4E9A-4916-B359-F7C636D69CEC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Worker_Notification", "Worker_Notification\Worker_Notification.csproj", "{43DB4638-CF40-4571-A386-ACBF02531875}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,9 +24,5 @@ Global
 		{4AB77306-4E9A-4916-B359-F7C636D69CEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4AB77306-4E9A-4916-B359-F7C636D69CEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4AB77306-4E9A-4916-B359-F7C636D69CEC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{43DB4638-CF40-4571-A386-ACBF02531875}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{43DB4638-CF40-4571-A386-ACBF02531875}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{43DB4638-CF40-4571-A386-ACBF02531875}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{43DB4638-CF40-4571-A386-ACBF02531875}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
