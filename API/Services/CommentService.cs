@@ -146,6 +146,8 @@ namespace API.Services
             repliesOfComments = await _mapperRepository.MapCreator(repliesOfComments);
             comment.Replies = repliesOfComments;
 
+            comment.TotalReply = repliesOfComments.Count();
+
             // Map total like for comment
             comment.TotalLike = likeDataSet.Count(x => x!.CommentId == comment.Id);
 
