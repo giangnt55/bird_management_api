@@ -17,14 +17,14 @@ public class LikeController : BaseController
 
   [HttpPost]
   [SwaggerOperation("Create like")]
-  public async Task<ApiResponse> CreateLike([FromBody]CreateLikeDto createLikeDto)
+  public async Task<ApiResponse> CreateLike([FromBody] CreateLikeDto createLikeDto)
   {
     return await _likeService.CreateLike(createLikeDto);
   }
 
   [HttpDelete]
   [SwaggerOperation("delete like")]
-  public async Task<ApiResponse> UnLike([FromBody]CreateLikeDto createLikeDto)
+  public async Task<ApiResponse> UnLike([FromBody] CreateLikeDto createLikeDto)
   {
     return await _likeService.Unlike(createLikeDto);
   }
