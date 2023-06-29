@@ -25,7 +25,9 @@ public class FriendDto : BaseDto
   public string? PhoneNumber { get; set; }
   public string? Address { get; set; }
   public string? Username { get; set; }
-  public int TotalFollow { get; set; }
+  public int TotalFollowing { get; set; }
+  public int TotalFollower { get; set; }
+  public int TotalPost { get; set; }
   public bool IsFollowedByLoggedInUser  { get; set; }
   public bool IsFollowingLoggedInUser   { get; set; }
 }

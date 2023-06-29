@@ -10,6 +10,7 @@ namespace API.Services;
 
 public interface IUserService : IBaseService
 {
+  Task<ApiResponse<FriendDto>> GetUserInformation(string username);
   Task<ApiResponse<UserDto>> GetAccountInformation();
   Task<ApiResponses<FriendDto>> GetSuggestionFollow(UserQuery userQuery);
 }
@@ -18,6 +19,34 @@ public class UserService : BaseService, IUserService
 {
   public UserService(MainUnitOfWork mainUnitOfWork, IHttpContextAccessor httpContextAccessor, IMapperRepository mapperRepository) : base(mainUnitOfWork, httpContextAccessor, mapperRepository)
   {
+  }
+
+  public async Task<ApiResponse<FriendDto>> GetUserInformation(string username)
+  {
+    var user = await MainUnitOfWork.UserRepository.FindOneAsync<FriendDto>(new Expression<Func<User, bool>>[]
+    {
+      x => !x.DeletedAt.HasValue,
+      x => x.Username == username
+    });
+
+    if (user == null)
+      throw new ApiException("Not existed username", StatusCode.BAD_REQUEST);
+
+    var followDataSet = MainUnitOfWork.FollowerRepository.GetQuery().Where(x=> !x!.DeletedAt.HasValue);
+
+    user.TotalFollower = followDataSet.Count(x => x!.FollowTo == user.Id);
+    user.TotalFollowing = followDataSet.Count(x => x!.CreatorId == user.Id);
+
+    user.IsFollowingLoggedInUser = followDataSet.Any(x => x.FollowTo == AccountId && x.CreatorId == user.Id);
+    user.IsFollowedByLoggedInUser = followDataSet.Any(x => x.FollowTo == user.Id && x.CreatorId == AccountId);
+
+    user.TotalPost = (await MainUnitOfWork.PostRepository.FindAsync(new Expression<Func<Post, bool>>[]
+    {
+      x => !x.DeletedAt.HasValue,
+      x => x.CreatorId == user.Id
+    }, null)).Count();
+
+    return ApiResponse<FriendDto>.Success(user);
   }
 
   public async Task<ApiResponse<UserDto>> GetAccountInformation()
@@ -52,6 +81,7 @@ public class UserService : BaseService, IUserService
           IsFollowedByLoggedInUser = followers.Any(f => f.CreatorId == AccountId),
           IsFollowingLoggedInUser = followers.Any(f => f.FollowTo == AccountId)
         })
+      .Where(x => x.IsFollowedByLoggedInUser == false)
       .OrderByDescending(x => x.FollowerCount)
       .Skip(userQuery.Skip())
       .Take(userQuery.PageSize)
@@ -68,7 +98,7 @@ public class UserService : BaseService, IUserService
         Status = x.User.Status,
         CreatedAt = x.User.CreatedAt,
         EditedAt = x.User.UpdatedAt,
-        TotalFollow = x.FollowerCount,
+        TotalFollower = x.FollowerCount,
         PhoneNumber = x.User.PhoneNumber,
         EditorId = x.User.EditorId ?? Guid.Empty,
         IsFollowedByLoggedInUser = x.IsFollowedByLoggedInUser,

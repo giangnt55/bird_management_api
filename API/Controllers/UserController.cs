@@ -24,6 +24,13 @@ public class UserController: BaseController
     return await _userService.GetAccountInformation();
   }
 
+  [HttpGet("{username}")]
+  [SwaggerOperation("Get account information by username")]
+  public async Task<ApiResponse<FriendDto>> GetUserInformation(string username)
+  {
+    return await _userService.GetUserInformation(username);
+  }
+
   [HttpGet("suggestion")]
   [SwaggerOperation("Get suggestion follow")]
   public async Task<ApiResponses<FriendDto>> GetSuggestionFollow([FromQuery]UserQuery userQuery)

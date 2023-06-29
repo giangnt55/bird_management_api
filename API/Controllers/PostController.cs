@@ -29,6 +29,13 @@ namespace API.Controllers
           return await _service.GetOwnPosts(queryDto);
         }
 
+        [HttpGet("{username}")]
+        [SwaggerOperation("Get posts by username")]
+        public async Task<ApiResponses<PostDto>> GetPostsByUsername(string username)
+        {
+          return await _service.GetPostByUserName(username);
+        }
+
         [HttpPost]
         [SwaggerOperation("Create new post")]
         public async Task<ApiResponse> InsertPost(PostCreateDto postDto)
