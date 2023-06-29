@@ -4,6 +4,7 @@ using MainData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MainData.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20230627052337_u2")]
+    partial class u2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -217,37 +220,6 @@ namespace MainData.Migrations
                     b.HasIndex("ParticipantId");
 
                     b.ToTable("FeedBacks");
-                });
-
-            modelBuilder.Entity("MainData.Entities.Follower", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("EditorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("FollowTo")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FollowTo");
-
-                    b.ToTable("Followers");
                 });
 
             modelBuilder.Entity("MainData.Entities.Like", b =>
@@ -637,17 +609,6 @@ namespace MainData.Migrations
                     b.Navigation("Participant");
                 });
 
-            modelBuilder.Entity("MainData.Entities.Follower", b =>
-                {
-                    b.HasOne("MainData.Entities.User", "User")
-                        .WithMany("Followers")
-                        .HasForeignKey("FollowTo")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("MainData.Entities.Like", b =>
                 {
                     b.HasOne("MainData.Entities.Comment", "Comment")
@@ -773,8 +734,6 @@ namespace MainData.Migrations
             modelBuilder.Entity("MainData.Entities.User", b =>
                 {
                     b.Navigation("Comments");
-
-                    b.Navigation("Followers");
 
                     b.Navigation("Likes");
 

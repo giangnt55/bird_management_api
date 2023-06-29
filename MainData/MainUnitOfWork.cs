@@ -11,7 +11,7 @@ public class MainUnitOfWork : IDisposable
     {
         _context = context;
     }
-    
+
     public BaseRepository<User> UserRepository => new(_context);
     public BaseRepository<Token> TokenRepository => new(_context);
     public BaseRepository<Notification> NotificationRepository => new(_context);
@@ -24,6 +24,7 @@ public class MainUnitOfWork : IDisposable
     public BaseRepository<Event> EventRepository => new(_context);
     public BaseRepository<Participant> ParticipantRepository => new(_context);
     public BaseRepository<FeedBack> FeedbackRepository => new(_context);
+    public BaseRepository<Follower> FollowerRepository => new(_context);
 
     public void Dispose()
     {
