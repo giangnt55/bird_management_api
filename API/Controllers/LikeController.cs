@@ -6,9 +6,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class LikeController : ControllerBase
+    public class LikeController : BaseController
     {
         private readonly ILikeService _service;
 
