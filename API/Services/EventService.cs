@@ -33,7 +33,7 @@ public class EventService : BaseService, IEventService
         }
         var events = eventsDto.ProjectTo<EventCreateDto, Event>();
 
-        events.Id = Guid.Empty;
+        events.Id = Guid.NewGuid();
 
         if (!await MainUnitOfWork.EventRepository.InsertAsync(events, AccountId, CurrentDate))
             throw new ApiException("Can't create", StatusCode.SERVER_ERROR);
@@ -51,7 +51,7 @@ public class EventService : BaseService, IEventService
             throw new ApiException("Can't not delete other's events", StatusCode.BAD_REQUEST);
 
         if (await MainUnitOfWork.EventRepository.DeleteAsync(existingEvent, AccountId, CurrentDate))
-            throw new ApiException("Delete SucessFull", StatusCode.SUCCESS);
+            throw new ApiException("Delete fail", StatusCode.SERVER_ERROR);
 
         return ApiResponse.Success();
     }
@@ -80,7 +80,7 @@ public class EventService : BaseService, IEventService
                 x => !x.DeletedAt.HasValue,
                 x => string.IsNullOrEmpty(queryDto.EventName) || x.EventName.Trim().ToLower().Contains(queryDto.EventName.Trim().ToLower())
         }, queryDto.OrderBy, queryDto.Skip(), queryDto.PageSize);
-        
+
         // Map to get CDC
         eventss.Items = await _mapperRepository.MapCreator(eventss.Items.ToList());
 
