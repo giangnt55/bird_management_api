@@ -13,7 +13,7 @@ namespace API.Services
     Task<ApiResponse<DetailCommentDto>> AddComment(CommentCreateDto commentDto);
     Task<ApiResponse<DetailCommentDto>> GetDetail(Guid commentId);
     // Task<ApiResponse<CommentCreateDto>> UpdateComment(Guid id, CommentCreateDto commentDto);
-    // Task<ApiResponse> DeleteComment(Guid id);
+    //Task<ApiResponse> DeleteComment(Guid id);
     Task<ApiResponses<CommentDto>> GetCommentByPost(Guid postId);
   }
 
@@ -96,7 +96,7 @@ namespace API.Services
       return ApiResponse<DetailCommentDto>.Success(comment);
     }
 
-    // public async Task<ApiResponse<CommentDeleteDto>> DeleteComment(Guid id, CommentDeleteDto commentDto)
+    // public async Task<ApiResponse> DeleteComment(Guid id)
     // {
     //     var existingPost = await MainUnitOfWork.PostRepository.FindOneAsync(commentDto.PostId);
     //     var existingComment = await MainUnitOfWork.CommentRepository.FindOneAsync(id);
@@ -111,7 +111,7 @@ namespace API.Services
     //     if (!result)
     //         throw new ApiException("Can't not delete", StatusCode.SERVER_ERROR);
 
-    //     return (ApiResponse<CommentDeleteDto>)ApiResponse.Success();
+    //     return ApiResponse.Success();
     // }
 
     public async Task<ApiResponses<CommentDto>> GetCommentByPost(Guid postId)
@@ -145,6 +145,8 @@ namespace API.Services
         // Map CDC for replies
         repliesOfComments = await _mapperRepository.MapCreator(repliesOfComments);
         comment.Replies = repliesOfComments;
+
+        comment.TotalReply = repliesOfComments.Count();
 
         // Map total like for comment
         comment.TotalLike = likeDataSet.Count(x => x!.CommentId == comment.Id);
