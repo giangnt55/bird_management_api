@@ -5,11 +5,16 @@ namespace API.Dtos
 {
     public class FollowerDto : BaseDto
     {
-        public Guid FollowTo { get; set; }  
-
-        //Relationship
-        public virtual User? User { get; set; }
+        public Guid FollowTo { get; set; }
+        public bool IsFollowed { get; set; }
     }
+
+    public class FollowToDto : BaseDto
+    {
+      public Guid FollowTo { get; set; }
+      public UserDto? FollowToUser { get; set; }
+    }
+
     public class FollowerCreateDto
     {
         public Guid FollowTo { get; set; }
@@ -17,10 +22,8 @@ namespace API.Dtos
 
     public class FollowerQuery : BaseQueryDto
     {
-        public Guid FollowTo { get;}
+        public Guid? FollowTo { get; set; }
+        public Guid? CreatorId { get; set; }
     }
-    public class  FollowerDetailDto : BaseDto
-    {
-        public bool isFollow { get; set; }
-    }
+
 }

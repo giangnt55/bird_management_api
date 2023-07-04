@@ -11,7 +11,7 @@ public class Follower : BaseEntity
   public Guid FollowTo { get; set; }
 
   //Relationship
-  public virtual User? User { get; set; }
+  public virtual User User { get; set; }
 }
 
 public class FollowerConfig : IEntityTypeConfiguration<Follower>

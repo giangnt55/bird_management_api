@@ -5,6 +5,7 @@ using MainData.Entities;
 using MainData.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using AppCore.Extensions;
 
 namespace API.Services
 {
@@ -12,7 +13,8 @@ namespace API.Services
     {
         public Task<ApiResponse> CreateFollower(FollowerCreateDto followerCreate);
         public Task<ApiResponse> UnFollower(Guid id);
-        public Task<ApiResponses<FollowerDetailDto>> GetFollowerOfUser(FollowerQuery queryDto);
+        public Task<ApiResponses<FollowerDto>> GetFollowerOfUser(FollowerQuery queryDto);
+        public Task<ApiResponses<FollowToDto>> GetFollowToOfUser(FollowerQuery queryDto);
     }
     public class FollowerService : BaseService, IFollowerService
     {
@@ -58,36 +60,74 @@ namespace API.Services
             return ApiResponse.Success();
         }
 
-        public async Task<ApiResponses<FollowerDetailDto>> GetFollowerOfUser(FollowerQuery queryDto)
+        public async Task<ApiResponses<FollowerDto>> GetFollowerOfUser(FollowerQuery queryDto)
         {
-            var followers = await MainUnitOfWork.FollowerRepository.FindAsync<FollowerDetailDto>(
-                new Expression<Func<Follower, bool>>[]
-                {
-                    x => !x.DeletedAt.HasValue,
-            x => x.FollowTo == queryDto.FollowTo || AccountId == x.FollowTo,
-            
-                },null
-            );
-            
+          var followers = await MainUnitOfWork.FollowerRepository.FindAsync<FollowerDto>(
+            new Expression<Func<Follower, bool>>[]
+            {
+              x => !x.DeletedAt.HasValue,
+              x => (queryDto.FollowTo != null && x.FollowTo == queryDto.FollowTo) || (queryDto.FollowTo == null && AccountId == x.FollowTo),
+            },
+            null
+          );
+
+            var followersDataset = MainUnitOfWork.FollowerRepository.GetQuery();
+
             followers = await _mapperRepository.MapCreator(followers);
+
             foreach (var follow in followers)
             {
-                if (follow.Editor != null)
-                {
-                    follow.isFollow = false;
-                }
-                else follow.isFollow = true;
+              if (queryDto.FollowTo != null)
+              {
+                var isFollowed = await followersDataset.AnyAsync(x =>
+                  x!.CreatorId == queryDto.FollowTo && x.FollowTo == follow.FollowTo);
+
+                follow.IsFollowed = isFollowed;
+              }
+              else
+              {
+                var isFollowed = await followersDataset.AnyAsync(x =>
+                  x!.CreatorId == AccountId && x.FollowTo == follow.FollowTo);
+
+                follow.IsFollowed = isFollowed;
+              }
             }
-            return ApiResponses<FollowerDetailDto>.Success(followers);
+
+            return ApiResponses<FollowerDto>.Success(followers);
+        }
+
+        public async Task<ApiResponses<FollowToDto>> GetFollowToOfUser(FollowerQuery queryDto)
+        {
+          var followers = await MainUnitOfWork.FollowerRepository.FindAsync<FollowToDto>(
+            new Expression<Func<Follower, bool>>[]
+            {
+              x => !x.DeletedAt.HasValue,
+              x => (queryDto.CreatorId != null && x.CreatorId == queryDto.CreatorId) || (queryDto.CreatorId == null && x.CreatorId == AccountId),
+            },
+            null
+          );
+
+
+          var userDataSet = MainUnitOfWork.UserRepository.GetQuery().Where(x => !x!.DeletedAt.HasValue);
+
+          followers = await _mapperRepository.MapCreator(followers);
+
+          foreach (var follow in followers)
+          {
+            follow.FollowToUser =
+              (await userDataSet.FirstOrDefaultAsync(x => x!.Id == follow.FollowTo))!.ProjectTo<User, UserDto>();
+          }
+
+          return ApiResponses<FollowToDto>.Success(followers);
         }
 
         public async Task<ApiResponse> UnFollower(Guid id)
         {
             var existingFollower = await MainUnitOfWork.FollowerRepository.FindOneAsync(new Expression<Func<Follower, bool>>[]
-    {
-      x => !x.DeletedAt.HasValue,
-      x => x.Id == id
-    });
+            {
+              x => !x.DeletedAt.HasValue,
+              x => x.Id == id
+            });
             if (existingFollower == null)
                 throw new ApiException("Not found this follow", StatusCode.NOT_FOUND);
             if (existingFollower.FollowTo == AccountId && existingFollower.Id  == id)
