@@ -9,11 +9,17 @@ public class LikeDto : BaseDto
 
 public class CreateLikeDto
 {
-    public Guid? PostId { get; set; }
-    public Guid? CommentId { get; set; }
+  public Guid? PostId { get; set; }
+  public Guid? CommentId { get; set; }
+}
+
+public class LikeCommentDto
+{
+  //public Guid PostId { get; set; }
+  public Guid CommentId { get; set; }
 }
 
 public class LikeResultDto
 {
-    public int TotalLikes { get; set; }
+  public int TotalLikes { get; set; }
 }

@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using API.Dtos;
 using AppCore.Models;
 using MainData;
@@ -55,7 +55,7 @@ public class LikeService : BaseService, ILikeService
       existingLike.DeletedAt = null;
       existingLike.UpdatedAt = CurrentDate;
 
-      if(!await MainUnitOfWork.LikeRepository.UpdateAsync(existingLike, AccountId, CurrentDate))
+      if (!await MainUnitOfWork.LikeRepository.UpdateAsync(existingLike, AccountId, CurrentDate))
         throw new ApiException(MessageKey.ServerError, StatusCode.SERVER_ERROR);
     }
     else
@@ -90,7 +90,7 @@ public class LikeService : BaseService, ILikeService
     if (like == null)
       throw new ApiException("Not found this content", StatusCode.NOT_FOUND);
 
-    if(!await MainUnitOfWork.LikeRepository.DeleteAsync(like, AccountId, CurrentDate))
+    if (!await MainUnitOfWork.LikeRepository.DeleteAsync(like, AccountId, CurrentDate))
       throw new ApiException(MessageKey.ServerError, StatusCode.SERVER_ERROR);
 
     return ApiResponse.Success();
