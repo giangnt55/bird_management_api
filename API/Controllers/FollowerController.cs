@@ -15,11 +15,18 @@ namespace API.Controllers
             _service = service;
         }
 
-        [HttpGet]
+        [HttpGet("followed")]
         [SwaggerOperation("Get followers")]
-        public async Task<ApiResponses<FollowerDetailDto>> GetFollowers([FromQuery] FollowerQuery queryDto)
+        public async Task<ApiResponses<FollowerDto>> GetFollowers([FromQuery] FollowerQuery queryDto)
         {
             return await _service.GetFollowerOfUser(queryDto);
+        }
+
+        [HttpGet("follow")]
+        [SwaggerOperation("Get list users follow to")]
+        public async Task<ApiResponses<FollowToDto>> GetFollowUsers([FromQuery] FollowerQuery queryDto)
+        {
+          return await _service.GetFollowToOfUser(queryDto);
         }
 
         [HttpPost]

@@ -34,6 +34,7 @@ public class MapperRepository : IMapperRepository
             {
                 Id = account.Id,
                 Fullname = account.Fullname,
+                Username = account.Username,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 Avatar = user.Avatar
@@ -59,6 +60,7 @@ public class MapperRepository : IMapperRepository
             {
                 Id = account.Id,
                 Fullname = account.Fullname,
+                Username = account.Username,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 Avatar = user.Avatar
@@ -69,3 +71,4 @@ public class MapperRepository : IMapperRepository
         return dto;
     }
 }
+
