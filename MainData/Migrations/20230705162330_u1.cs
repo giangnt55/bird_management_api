@@ -42,15 +42,16 @@ namespace MainData.Migrations
                     EventName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
+                    HostType = table.Column<int>(type: "int", nullable: false),
                     CoverImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MaxParticipants = table.Column<int>(type: "int", nullable: false),
                     MinParticipants = table.Column<int>(type: "int", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Prerequisite = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EvaluationStrategy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Location = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Prerequisite = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EvaluationStrategy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     EditorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -108,6 +109,29 @@ namespace MainData.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Followers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FollowTo = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    EditorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Followers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Followers_Users_FollowTo",
+                        column: x => x.FollowTo,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -257,7 +281,7 @@ namespace MainData.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReplyTo = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
@@ -273,8 +297,7 @@ namespace MainData.Migrations
                         name: "FK_Comments_Post_PostId",
                         column: x => x.PostId,
                         principalTable: "Post",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Comments_Users_CreatorId",
                         column: x => x.CreatorId,
@@ -373,6 +396,11 @@ namespace MainData.Migrations
                 column: "ParticipantId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Followers_FollowTo",
+                table: "Followers",
+                column: "FollowTo");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Likes_CommentId",
                 table: "Likes",
                 column: "CommentId");
@@ -431,6 +459,9 @@ namespace MainData.Migrations
 
             migrationBuilder.DropTable(
                 name: "FeedBacks");
+
+            migrationBuilder.DropTable(
+                name: "Followers");
 
             migrationBuilder.DropTable(
                 name: "Likes");

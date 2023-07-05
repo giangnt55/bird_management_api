@@ -8,7 +8,7 @@ public class DatabaseContext : DbContext
     public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
     {
     }
-    
+
     public DbSet<User> Users { set; get; }
     public DbSet<Token> Tokens { set; get; }
     public DbSet<Post> Post { set; get; }
@@ -21,6 +21,7 @@ public class DatabaseContext : DbContext
     public DbSet<Participant> Participants { set; get; }
     public DbSet<FeedBack> FeedBacks { set; get; }
     public DbSet<Report> Reports { set; get; }
+    public DbSet<Follower> Followers { set; get; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -36,5 +37,6 @@ public class DatabaseContext : DbContext
         modelBuilder.ApplyConfiguration(new ParticipantConfig());
         modelBuilder.ApplyConfiguration(new FeedBackConfig());
         modelBuilder.ApplyConfiguration(new ReportConfig());
+        modelBuilder.ApplyConfiguration(new FollowerConfig());
     }
 }

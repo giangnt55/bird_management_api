@@ -4,31 +4,35 @@ using AppCore.Models;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace API.Controllers
+namespace API.Controllers;
+
+public class LikeController : BaseController
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class LikeController : ControllerBase
-    {
-        private readonly ILikeService _service;
+  private readonly ILikeService _likeService;
 
-        public LikeController(ILikeService likeService)
-        {
-            _service = likeService;
-        }
+  public LikeController(ILikeService likeService)
+  {
+    _likeService = likeService;
+  }
 
-        [HttpPost]
-        [SwaggerOperation("Like post")]
-        public async Task<ApiResponse> LikePost(LikePostDto likeDto)
-        {
-            return await _service.LikePost(likeDto);
-        }
+  [HttpPost]
+  [SwaggerOperation("Create like")]
+  public async Task<ApiResponse> CreateLike([FromBody] CreateLikeDto createLikeDto)
+  {
+    return await _likeService.CreateLike(createLikeDto);
+  }
 
-        [HttpPost("comment")]
-        [SwaggerOperation("Like comment")]
-        public async Task<ApiResponse> LikeComment(LikeCommentDto likeDto)
-        {
-            return await _service.LikeComment(likeDto);
-        }
-    }
+  [HttpDelete]
+  [SwaggerOperation("delete like")]
+  public async Task<ApiResponse> UnLike([FromBody] CreateLikeDto createLikeDto)
+  {
+    return await _likeService.Unlike(createLikeDto);
+  }
+
+  [HttpGet("post/{postId:guid}")]
+  [SwaggerOperation("Create like")]
+  public async Task<ApiResponse> GetLikesOfPost(Guid postId)
+  {
+    return await _likeService.GetLikeOfPost(postId);
+  }
 }

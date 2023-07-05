@@ -1,5 +1,6 @@
 ﻿using AppCore.Extensions;
 using MainData;
+using MainData.Entities;
 using MainData.Repositories;
 
 namespace API.Services;
@@ -15,6 +16,7 @@ public class BaseService : IBaseService
     internal readonly IHttpContextAccessor HttpContextAccessor;
     internal readonly IMapperRepository _mapperRepository;
     internal Guid? AccountId;
+    internal UserRole? AccountRole;
     public BaseService(MainUnitOfWork mainUnitOfWork, IHttpContextAccessor httpContextAccessor, IMapperRepository mapperRepository)
     {
         MainUnitOfWork = mainUnitOfWork;

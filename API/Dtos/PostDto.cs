@@ -23,6 +23,7 @@ public class PostDto : BaseDto
     public string? Tittle { get; set; }
     public string Content { get; set; } = string.Empty;
     public string? Image { get; set; }
+    public bool IsLiked { get; set; }
     public int TotalLike { get; set; }
     public int TotalComment { get; set; }
 }
@@ -39,5 +40,5 @@ public class DetailPostDto : BaseDto
 
 public class PostQueryDto : BaseQueryDto
 {
-    
+
 }

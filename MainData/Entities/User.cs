@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace MainData.Entities;
 
-public class User : BaseEntity  
+public class User : BaseEntity
 {
     public string? Fullname { get; set; }
     public string? Avatar { get; set; }
@@ -19,12 +19,13 @@ public class User : BaseEntity
 
     //Relationship
     public virtual IEnumerable<Token>? Tokens { get; set; }
-    public virtual IEnumerable<Notification>? Notifications { get; set; } 
+    public virtual IEnumerable<Notification>? Notifications { get; set; }
     public virtual IEnumerable<Comment>? Comments { get; set; }
-    public virtual IEnumerable<Like>? Likes { get; set; } 
-    public virtual IEnumerable<Report>? Reports { get; set; } 
-    public virtual IEnumerable<Participant>? Participants { get; set; } 
-    public virtual IEnumerable<Post>? Posts { get; set; } 
+    public virtual IEnumerable<Like>? Likes { get; set; }
+    public virtual IEnumerable<Report>? Reports { get; set; }
+    public virtual IEnumerable<Participant>? Participants { get; set; }
+    public virtual IEnumerable<Post>? Posts { get; set; }
+    public virtual IEnumerable<Follower>? Followers { get; set; }
 }
 
 public enum UserRole
@@ -50,7 +51,7 @@ public class UserConfig : IEntityTypeConfiguration<User>
         builder.Property(x => x.Username).IsRequired().HasMaxLength(50);;
         builder.Property(x => x.Password).IsRequired();
         builder.Property(x => x.Salt).IsRequired();
-        
+
         //Relationship
         builder.HasMany(u => u.Tokens)
             .WithOne()
@@ -59,26 +60,30 @@ public class UserConfig : IEntityTypeConfiguration<User>
         builder.HasMany(u => u.Notifications)
             .WithOne(x => x.User)
             .HasForeignKey(t => t.UserId);
-        
+
         builder.HasMany(u => u.Comments)
             .WithOne(x => x.User)
             .HasForeignKey(t => t.CreatorId);
-        
+
         builder.HasMany(u => u.Likes)
             .WithOne(x => x.User)
             .HasForeignKey(t => t.CreatorId);
-        
+
         builder.HasMany(u => u.Reports)
             .WithOne(x => x.User)
             .HasForeignKey(t => t.CreatorId);
-        
+
         builder.HasMany(u => u.Participants)
             .WithOne(x => x.User)
             .HasForeignKey(t => t.CreatorId);
-        
+
         builder.HasMany(u => u.Posts)
             .WithOne(x => x.User)
             .HasForeignKey(t => t.CreatorId);
-        
+
+        builder.HasMany(u => u.Followers)
+          .WithOne(x => x.User)
+          .HasForeignKey(t => t.FollowTo);
+
     }
 }

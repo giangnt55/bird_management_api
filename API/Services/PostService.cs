@@ -13,6 +13,7 @@ namespace API.Services
   {
     Task<ApiResponses<PostDto>> GetPosts(PostQueryDto queryDto);
     Task<ApiResponses<PostDto>> GetOwnPosts(PostQueryDto queryDto);
+    Task<ApiResponses<PostDto>> GetPostByUserName(string username);
     Task<ApiResponse<DetailPostDto>> GetPost(Guid id);
     Task<ApiResponse<DetailPostDto>> Create(PostCreateDto postDto);
     Task<ApiResponse<DetailPostDto>> Update(Guid id, PostUpdateDto postUpdateDto);
@@ -85,6 +86,7 @@ namespace API.Services
       foreach (var post in posts.Items)
       {
         post.TotalComment = comments.Count(x => x!.PostId == post.Id);
+        post.IsLiked = likes.Any(x => !x!.DeletedAt.HasValue && x.PostId == post.Id && x.CreatorId == AccountId);
       }
 
       return ApiResponses<PostDto>.Success(
@@ -131,6 +133,46 @@ namespace API.Services
         queryDto.Skip(),
         (int)Math.Ceiling(posts.TotalCount / (double)queryDto.PageSize)
       );
+    }
+
+    public async Task<ApiResponses<PostDto>> GetPostByUserName(string username)
+    {
+      var user = await MainUnitOfWork.UserRepository.FindOneAsync(new Expression<Func<User, bool>>[]
+      {
+         x => !x.DeletedAt.HasValue,
+         x => x.Username == username
+      });
+
+      if (user == null)
+        throw new ApiException("Not existed username", StatusCode.BAD_REQUEST);
+
+      // Get list
+      var posts = await MainUnitOfWork.PostRepository.FindAsync<PostDto>(new Expression<Func<Post, bool>>[]
+      {
+        x => !x.DeletedAt.HasValue,
+        x => x.CreatorId == user.Id
+      }, "CreatedAt desc");
+
+      // Map to get CDC
+      posts = await _mapperRepository.MapCreator(posts);
+
+      // Map total like to each post
+      var likes = MainUnitOfWork.LikeRepository.GetQuery();
+
+      foreach (var post in posts)
+      {
+        post.TotalLike = likes.Count(x => x!.PostId == post.Id);
+      }
+
+      // Map comments to each post
+      var comments = MainUnitOfWork.CommentRepository.GetQuery();
+
+      foreach (var post in posts)
+      {
+        post.TotalComment = comments.Count(x => x!.PostId == post.Id);
+      }
+
+      return ApiResponses<PostDto>.Success(posts);
     }
 
     public async Task<ApiResponse<DetailPostDto>> GetPost(Guid id)
@@ -189,6 +231,8 @@ namespace API.Services
         comment.TotalLike = likeDataSet.Count(x => x!.PostId == comment.Id);
       }
 
+      post.Comments = comments;
+
       return ApiResponse<DetailPostDto>.Success(post);
     }
 
@@ -204,48 +248,5 @@ namespace API.Services
       return await GetPost(post.Id);
     }
 
-    public async Task<ApiResponse<LikeResultDto>> LikePost(Guid id)
-    {
-      var post = await MainUnitOfWork.PostRepository.FindOneAsync(id);
-      if (post == null)
-        throw new ApiException("Post not found", StatusCode.NOT_FOUND);
-
-      // Check if the user has already liked the post
-      var existingLike = await MainUnitOfWork.LikeRepository.FindOneAsync(new Expression<Func<Like, bool>>[]
-          {
-                    x => x.PostId == post.Id && x.CreatorId == AccountId
-          });
-
-      if (existingLike != null)
-      {
-        // User has already liked the post, so remove the like
-        if (!await MainUnitOfWork.LikeRepository.DeleteAsync(existingLike, AccountId, CurrentDate))
-          throw new ApiException("Failed to remove the like", StatusCode.SERVER_ERROR);
-      }
-      else
-      {
-        // Create a new Like entity
-        var like = new Like
-        {
-          PostId = post.Id,
-          CreatorId = AccountId,
-          CreatedAt = CurrentDate
-        };
-
-        if (!await MainUnitOfWork.LikeRepository.InsertAsync(like, AccountId, CurrentDate))
-          throw new ApiException("Failed to like the post", StatusCode.SERVER_ERROR);
-      }
-
-      // Retrieve the updated total number of likes for the post
-      var totalLikes = MainUnitOfWork.LikeRepository.GetQuery().Where(x =>
-          !x!.DeletedAt.HasValue);
-
-      var resultDto = new LikeResultDto
-      {
-        TotalLikes = totalLikes.Count(x => x.PostId == post.Id)
-      };
-
-      return ApiResponse<LikeResultDto>.Success(resultDto);
-    }
   }
 }

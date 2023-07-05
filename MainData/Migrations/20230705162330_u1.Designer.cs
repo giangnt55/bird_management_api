@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MainData.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20230622050844_u1")]
+    [Migration("20230705162330_u1")]
     partial class u1
     {
         /// <inheritdoc />
@@ -95,7 +95,7 @@ namespace MainData.Migrations
                     b.Property<Guid?>("EditorId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("PostId")
+                    b.Property<Guid?>("PostId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("ReplyTo")
@@ -138,19 +138,20 @@ namespace MainData.Migrations
                     b.Property<Guid?>("EditorId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("EndDate")
+                    b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("EvaluationStrategy")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("EventName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("HostType")
+                        .HasColumnType("int");
+
                     b.Property<string>("Location")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("MaxParticipants")
@@ -160,7 +161,6 @@ namespace MainData.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Prerequisite")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("StartDate")
@@ -220,6 +220,37 @@ namespace MainData.Migrations
                     b.HasIndex("ParticipantId");
 
                     b.ToTable("FeedBacks");
+                });
+
+            modelBuilder.Entity("MainData.Entities.Follower", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("EditorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("FollowTo")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FollowTo");
+
+                    b.ToTable("Followers");
                 });
 
             modelBuilder.Entity("MainData.Entities.Like", b =>
@@ -583,9 +614,7 @@ namespace MainData.Migrations
 
                     b.HasOne("MainData.Entities.Post", "Post")
                         .WithMany("Comments")
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PostId");
 
                     b.Navigation("Post");
 
@@ -609,6 +638,17 @@ namespace MainData.Migrations
                     b.Navigation("Event");
 
                     b.Navigation("Participant");
+                });
+
+            modelBuilder.Entity("MainData.Entities.Follower", b =>
+                {
+                    b.HasOne("MainData.Entities.User", "User")
+                        .WithMany("Followers")
+                        .HasForeignKey("FollowTo")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("MainData.Entities.Like", b =>
@@ -736,6 +776,8 @@ namespace MainData.Migrations
             modelBuilder.Entity("MainData.Entities.User", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("Followers");
 
                     b.Navigation("Likes");
 
