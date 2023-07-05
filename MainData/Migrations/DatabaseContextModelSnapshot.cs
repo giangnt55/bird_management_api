@@ -92,7 +92,7 @@ namespace MainData.Migrations
                     b.Property<Guid?>("EditorId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("PostId")
+                    b.Property<Guid?>("PostId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("ReplyTo")
@@ -217,6 +217,37 @@ namespace MainData.Migrations
                     b.HasIndex("ParticipantId");
 
                     b.ToTable("FeedBacks");
+                });
+
+            modelBuilder.Entity("MainData.Entities.Follower", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("EditorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("FollowTo")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FollowTo");
+
+                    b.ToTable("Followers");
                 });
 
             modelBuilder.Entity("MainData.Entities.Like", b =>
@@ -580,9 +611,7 @@ namespace MainData.Migrations
 
                     b.HasOne("MainData.Entities.Post", "Post")
                         .WithMany("Comments")
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PostId");
 
                     b.Navigation("Post");
 
@@ -606,6 +635,17 @@ namespace MainData.Migrations
                     b.Navigation("Event");
 
                     b.Navigation("Participant");
+                });
+
+            modelBuilder.Entity("MainData.Entities.Follower", b =>
+                {
+                    b.HasOne("MainData.Entities.User", "User")
+                        .WithMany("Followers")
+                        .HasForeignKey("FollowTo")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("MainData.Entities.Like", b =>
@@ -733,6 +773,8 @@ namespace MainData.Migrations
             modelBuilder.Entity("MainData.Entities.User", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("Followers");
 
                     b.Navigation("Likes");
 
