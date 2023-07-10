@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using API.Dtos;
+using AppCore.Extensions;
 using AppCore.Models;
 using MainData;
 using MainData.Entities;
@@ -13,6 +14,9 @@ public interface IUserService : IBaseService
   Task<ApiResponse<FriendDto>> GetUserInformation(string username);
   Task<ApiResponse<UserDto>> GetAccountInformation();
   Task<ApiResponses<FriendDto>> GetSuggestionFollow(UserQuery userQuery);
+  Task<ApiResponses<UserDto>> Gets(UserQuery userQuery);
+  Task<ApiResponse<UserDto>> GetUserDetail(Guid id);
+  Task<ApiResponse> UpdateInformation(Guid id, UserUpdate userUpdate);
 }
 
 public class UserService : BaseService, IUserService
@@ -109,5 +113,84 @@ public class UserService : BaseService, IUserService
 
     return ApiResponses<FriendDto>.Success(users);
   }
+
+  public async Task<ApiResponses<UserDto>> Gets(UserQuery userQuery)
+  {
+    var users = await MainUnitOfWork.UserRepository.FindResultAsync<UserDto>(new Expression<Func<User, bool>>[]
+    {
+      x => !x.DeletedAt.HasValue,
+    }, userQuery.OrderBy, userQuery.Skip(), userQuery.PageSize);
+
+    users.Items = await _mapperRepository.MapCreator(users.Items.ToList());
+
+    return ApiResponses<UserDto>.Success(
+      users.Items,
+      users.TotalCount,
+      userQuery.PageSize,
+      userQuery.Skip(),
+      (int)Math.Ceiling(users.TotalCount / (double)userQuery.PageSize)
+    );
+  }
+
+  public async Task<ApiResponse<UserDto>> GetUserDetail(Guid id)
+  {
+    var user = await MainUnitOfWork.UserRepository.FindOneAsync<UserDto>(new Expression<Func<User, bool>>[]
+    {
+      x => !x.DeletedAt.HasValue,
+      x => x.Id == id
+    });
+
+    if (user == null)
+      throw new ApiException("Not found this user", StatusCode.NOT_FOUND);
+
+    user = await _mapperRepository.MapCreator(user);
+
+    return ApiResponse<UserDto>.Success(user);
+  }
+
+  public async Task<ApiResponse> UpdateInformation(Guid id, UserUpdate userUpdate)
+  {
+    var user = await MainUnitOfWork.UserRepository.FindOneAsync<UserDto>(new Expression<Func<User, bool>>[]
+    {
+      x => !x.DeletedAt.HasValue,
+      x => x.Id == id
+    });
+
+    if (user == null)
+      throw new ApiException("Not found this user", StatusCode.NOT_FOUND);
+
+    if (user.Id != AccountId)
+    {
+      var checkRole = await MainUnitOfWork.UserRepository.FindOneAsync(new Expression<Func<User, bool>>[]
+      {
+        x => !x.DeletedAt.HasValue,
+        x => x.Id == AccountId,
+        x => x.Role == UserRole.Admin || x.Role == UserRole.Staff
+      });
+
+      if (checkRole == null)
+        throw new ApiException("Can't not update information of this user", StatusCode.BAD_REQUEST);
+
+      if (userUpdate.Role != null)
+      {
+        user.Role = userUpdate.Role.Value;
+      }
+    }
+
+    user.Fullname = userUpdate.Fullname ?? user.Fullname;
+    user.Address = userUpdate.Address ?? user.Address;
+    user.Status = userUpdate.Status ?? user.Status;
+    user.Email = userUpdate.Email ?? user.Email;
+    if (userUpdate.Status != null)
+    {
+      user.Status = userUpdate.Status.Value;
+    }
+
+    user.Avatar = userUpdate.Avatar ?? user.Avatar;
+    user.PhoneNumber = userUpdate.PhoneNumber ?? user.PhoneNumber;
+
+    return ApiResponse.Success();
+  }
+
 }
 
