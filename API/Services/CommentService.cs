@@ -4,10 +4,7 @@ using AppCore.Models;
 using MainData;
 using MainData.Entities;
 using MainData.Repositories;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Identity.Client;
 using System.Linq.Expressions;
-using AppCore.Extensions;
 
 namespace API.Services
 {

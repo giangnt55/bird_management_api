@@ -218,6 +218,16 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
         await _unitOfWork.SaveAsync();
         return await _unitOfWork.CommitTransactionAsync();
     }
+    public async Task<bool> UpdateEditorAsync(TEntity? entity, Guid? editorId, DateTime? now = null)
+    {
+        await _unitOfWork.BeginTransactionAsync();
+        now ??= DateTime.UtcNow;
+        entity!.UpdatedAt = now.Value;
+        entity.EditorId = editorId;
+        _dbSet.Entry(entity).State = EntityState.Modified;
+        await _unitOfWork.SaveAsync();
+        return await _unitOfWork.CommitTransactionAsync();
+    }
 
     public async Task<bool> UpdateAsync(IEnumerable<TEntity?> entities, Guid? editorId, DateTime? now = null)
     {

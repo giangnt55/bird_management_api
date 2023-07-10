@@ -11,7 +11,7 @@ namespace API.Dtos
         //Relationship
         public virtual User User { get; set; } = new User();
         public virtual Event Event { get; set; } = new Event();
-        public virtual IEnumerable<FeedBack>? FeedBacks { get; set; }
+        //public virtual IEnumerable<FeedBack>? FeedBacks { get; set; }
     }
 
     public class ParticipantCreateDto
@@ -41,6 +41,6 @@ namespace API.Dtos
 
     public class ParticipantQueryDto : BaseQueryDto
     {
-        
+
     }
 }
