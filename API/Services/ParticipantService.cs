@@ -104,12 +104,12 @@ public class ParticipantService : BaseService, IParticipantService
         }
 
         var participant = participantDto.ProjectTo<ParticipantCreateDto, Participant>();
-        var existingParticipant = GetParticipant(participant.Id);
-        if (existingParticipant == null)
-            throw new ApiException("Can't create", StatusCode.SERVER_ERROR);
+        // var existingParticipant = await GetParticipant(participant.Id);
+        // if (existingParticipant == null)
+        //     throw new ApiException("Can't create", StatusCode.SERVER_ERROR);
 
         // count participant to check max join and role
-        var CountParticipant = MainUnitOfWork.ParticipantRepository.GetQuery().Count(x => !x!.DeletedAt.HasValue && x.EventId == participantDto.EventId && x.Role == ParticipantRole.Participant);
+        var countParticipant = MainUnitOfWork.ParticipantRepository.GetQuery().Count(x => !x!.DeletedAt.HasValue && x.EventId == participantDto.EventId && x.Role == ParticipantRole.Participant);
 
         // get maxparti in event
         var existingEvent = await MainUnitOfWork.EventRepository.FindOneAsync<EventDetailDto>(
@@ -118,9 +118,9 @@ public class ParticipantService : BaseService, IParticipantService
                     x => !x.DeletedAt.HasValue,
                     x => x.Id == participantDto.EventId
                });
-        
+
         // check count and max
-        if (CountParticipant > existingEvent.MaxParticipants)
+        if (countParticipant > existingEvent.MaxParticipants)
         {
             throw new ApiException("Participant was fullly", StatusCode.BAD_REQUEST);
         }
