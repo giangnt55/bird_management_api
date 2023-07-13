@@ -150,7 +150,7 @@ public class UserService : BaseService, IUserService
 
   public async Task<ApiResponse> UpdateInformation(Guid id, UserUpdate userUpdate)
   {
-    var user = await MainUnitOfWork.UserRepository.FindOneAsync<UserDto>(new Expression<Func<User, bool>>[]
+    var user = await MainUnitOfWork.UserRepository.FindOneAsync(new Expression<Func<User, bool>>[]
     {
       x => !x.DeletedAt.HasValue,
       x => x.Id == id
@@ -178,6 +178,7 @@ public class UserService : BaseService, IUserService
     }
 
     user.Fullname = userUpdate.Fullname ?? user.Fullname;
+    user.Introduction = userUpdate.Introduction ?? user.Introduction;
     user.Address = userUpdate.Address ?? user.Address;
     user.Status = userUpdate.Status ?? user.Status;
     user.Email = userUpdate.Email ?? user.Email;

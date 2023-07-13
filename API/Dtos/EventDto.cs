@@ -19,6 +19,8 @@ public class EventDto : BaseDto
     public int TotalParticipant { get; set; }
     public int TotalFeedback { get; set; }
     public decimal AverageRating { get; set; }
+    
+    public bool IsJoined { get; set; }
 
     //Relationship
     // public virtual IEnumerable<Participant>? Participants { get; set; }

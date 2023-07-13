@@ -4,6 +4,7 @@ using MainData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MainData.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20230713103904_u3")]
+    partial class u3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -558,9 +561,7 @@ namespace MainData.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Avatar")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(max)")
-                        .HasDefaultValue("https://thumbs.dreamstime.com/b/bird-avatar-illustration-cartoon-45383650.jpg");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -578,9 +579,6 @@ namespace MainData.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Fullname")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Introduction")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
