@@ -189,6 +189,9 @@ public class UserService : BaseService, IUserService
 
     user.Avatar = userUpdate.Avatar ?? user.Avatar;
     user.PhoneNumber = userUpdate.PhoneNumber ?? user.PhoneNumber;
+    
+    if (!await MainUnitOfWork.UserRepository.UpdateAsync(user, AccountId, CurrentDate))
+      throw new ApiException("Updated fail", StatusCode.SERVER_ERROR);
 
     return ApiResponse.Success();
   }
