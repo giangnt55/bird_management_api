@@ -462,6 +462,9 @@ namespace MainData.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("CommentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -474,7 +477,7 @@ namespace MainData.Migrations
                     b.Property<Guid?>("EditorId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("TargetId")
+                    b.Property<Guid?>("PostId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Type")
@@ -485,9 +488,11 @@ namespace MainData.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CommentId");
+
                     b.HasIndex("CreatorId");
 
-                    b.HasIndex("TargetId");
+                    b.HasIndex("PostId");
 
                     b.ToTable("Reports");
                 });
@@ -553,7 +558,9 @@ namespace MainData.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Avatar")
-                        .HasColumnType("nvarchar(max)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("https://thumbs.dreamstime.com/b/bird-avatar-illustration-cartoon-45383650.jpg");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -571,6 +578,9 @@ namespace MainData.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Fullname")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Introduction")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
@@ -710,21 +720,19 @@ namespace MainData.Migrations
 
             modelBuilder.Entity("MainData.Entities.Report", b =>
                 {
+                    b.HasOne("MainData.Entities.Comment", "Comment")
+                        .WithMany("Reports")
+                        .HasForeignKey("CommentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("MainData.Entities.User", "User")
                         .WithMany("Reports")
                         .HasForeignKey("CreatorId");
 
-                    b.HasOne("MainData.Entities.Comment", "Comment")
-                        .WithMany("Reports")
-                        .HasForeignKey("TargetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("MainData.Entities.Post", "Post")
                         .WithMany("Reports")
-                        .HasForeignKey("TargetId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Comment");
 

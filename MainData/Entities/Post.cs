@@ -38,7 +38,7 @@ public class PostConfig : IEntityTypeConfiguration<Post>
         
         builder.HasMany(x => x.Reports)
             .WithOne(x => x.Post)
-            .HasForeignKey(x => x.TargetId)
+            .HasForeignKey(x => x.PostId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(x => x.User)

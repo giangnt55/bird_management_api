@@ -7,6 +7,7 @@ namespace MainData.Entities;
 public class User : BaseEntity
 {
     public string? Fullname { get; set; }
+    public string? Introduction { get; set; }
     public string? Avatar { get; set; }
     public UserRole Role { get; set; }
     public  UserStatus Status { get; set; }
@@ -40,10 +41,11 @@ public enum UserStatus
 
 public class UserConfig : IEntityTypeConfiguration<User>
 {
-    public void Configure(EntityTypeBuilder<User> builder)
+    public void Configure(EntityTypeBuilder<User> builder)  
     {
         builder.Property(x => x.Fullname).IsRequired(false);
-        builder.Property(x => x.Avatar).IsRequired(false);
+        builder.Property(x => x.Avatar).IsRequired(false).HasDefaultValue("https://thumbs.dreamstime.com/b/bird-avatar-illustration-cartoon-45383650.jpg");
+        builder.Property(x => x.Introduction).IsRequired(false);
         builder.Property(x => x.Role).IsRequired();
         builder.Property(x => x.Email).IsRequired(false);
         builder.Property(x => x.PhoneNumber).IsRequired(false);
