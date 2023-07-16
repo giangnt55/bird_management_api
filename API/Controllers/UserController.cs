@@ -61,12 +61,10 @@ public class UserController: BaseController
     return await _userService.GetSuggestionFollow(userQuery);
   }
   
-  // [HttpGet("Export")]
-  // [SwaggerOperation("Get suggestion follow")]
-  // public async Task<Stream> Export()
-  // {
-  //   var users = await _userService.ExportUser();
-  //
-  //   return ExportHelperList<UserDto>.Export(users, "Reporting", "Danh sách người dùng");
-  // }
+  [HttpDelete("{id:guid}")]
+  [SwaggerOperation("Delete user")]
+  public async Task<ApiResponse> DeleteUser(Guid id)
+  {
+   return await _userService.DeleteUser(id);
+  }
 }

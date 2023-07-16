@@ -2,6 +2,7 @@
 using API.Dtos;
 using AppCore.Extensions;
 using AppCore.Models;
+using DocumentFormat.OpenXml.Spreadsheet;
 using MainData;
 using MainData.Entities;
 using MainData.Repositories;
@@ -16,6 +17,7 @@ public interface IUserService : IBaseService
   Task<ApiResponses<FriendDto>> GetSuggestionFollow(UserQuery userQuery);
   Task<ApiResponses<UserDto>> Gets(UserQuery userQuery);
   Task<ApiResponse<UserDto>> GetUserDetail(Guid id);
+  Task<ApiResponse> DeleteUser(Guid id);
   Task<ApiResponse> UpdateInformation(Guid id, UserUpdate userUpdate);
   Task<List<UserDto>> ExportUser();
 }
@@ -117,11 +119,18 @@ public class UserService : BaseService, IUserService
 
   public async Task<ApiResponses<UserDto>> Gets(UserQuery userQuery)
   {
+
+    var keyword = userQuery.Keyword?.Trim().ToLower();
     var users = await MainUnitOfWork.UserRepository.FindResultAsync<UserDto>(new Expression<Func<User, bool>>[]
     {
       x => !x.DeletedAt.HasValue,
+      x => string.IsNullOrEmpty(keyword) || (x.Fullname!.ToLower().Contains(keyword) ||
+                                             x.Email!.ToLower().Contains(keyword) ||  x.Introduction!.ToLower().Contains(keyword) ||
+                                             x.PhoneNumber!.ToLower().Contains(keyword)),
+      x => x.Role != UserRole.Admin || (x.Role == UserRole.Member || x.Role == UserRole.Staff)
     }, userQuery.OrderBy, userQuery.Skip(), userQuery.PageSize);
 
+    
     users.Items = await _mapperRepository.MapCreator(users.Items.ToList());
 
     return ApiResponses<UserDto>.Success(
@@ -147,6 +156,23 @@ public class UserService : BaseService, IUserService
     user = await _mapperRepository.MapCreator(user);
 
     return ApiResponse<UserDto>.Success(user);
+  }
+
+  public async Task<ApiResponse> DeleteUser(Guid id)
+  {
+    var user = await MainUnitOfWork.UserRepository.FindOneAsync(new Expression<Func<User, bool>>[]
+    {
+      x => !x.DeletedAt.HasValue,
+      x => x.Id == id
+    });
+
+    if (user == null)
+      throw new ApiException("Not found this user", StatusCode.NOT_FOUND);
+
+    if (!await MainUnitOfWork.UserRepository.DeleteAsync(user, AccountId, CurrentDate))
+      throw new ApiException("Delete fail", StatusCode.SERVER_ERROR);
+
+    return ApiResponse.Success();
   }
 
   public async Task<ApiResponse> UpdateInformation(Guid id, UserUpdate userUpdate)
