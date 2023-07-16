@@ -12,7 +12,8 @@ namespace API.Services
     public interface IFollowerService : IBaseService
     {
         public Task<ApiResponse> CreateFollower(FollowerCreateDto followerCreate);
-        public Task<ApiResponse> UnFollower(Guid id);
+       // public Task<ApiResponse> UnFollower(Guid id);
+        public Task<ApiResponse> UnFollow(Guid id);
         public Task<ApiResponses<FollowerDto>> GetFollowerOfUser(FollowerQuery queryDto);
         public Task<ApiResponses<FollowToDto>> GetFollowToOfUser(FollowerQuery queryDto);
     }
@@ -57,6 +58,21 @@ namespace API.Services
                 // Failed to create follower
                 throw new ApiException("Failed to create follower", StatusCode.SERVER_ERROR);
             }
+            return ApiResponse.Success();
+        }
+
+        public async Task<ApiResponse> UnFollow(Guid id)
+        {
+            var existingFollower = await MainUnitOfWork.FollowerRepository.FindOneAsync(new Expression<Func<Follower, bool>>[]
+            {
+                x => !x.DeletedAt.HasValue,
+                x => x.FollowTo == id,
+                x => x.CreatorId == AccountId
+            });
+            
+            if (!await MainUnitOfWork.FollowerRepository.DeleteAsync(existingFollower, AccountId, CurrentDate))
+                throw new ApiException("Can't not delete", StatusCode.SERVER_ERROR);
+
             return ApiResponse.Success();
         }
 
@@ -121,21 +137,21 @@ namespace API.Services
           return ApiResponses<FollowToDto>.Success(followers);
         }
 
-        public async Task<ApiResponse> UnFollower(Guid id)
-        {
-            var existingFollower = await MainUnitOfWork.FollowerRepository.FindOneAsync(new Expression<Func<Follower, bool>>[]
-            {
-              x => !x.DeletedAt.HasValue,
-              x => x.Id == id
-            });
-            if (existingFollower == null)
-                throw new ApiException("Not found this follow", StatusCode.NOT_FOUND);
-            if (existingFollower.FollowTo == AccountId && existingFollower.Id  == id)
-                throw new ApiException("Can't not delete other's followers", StatusCode.BAD_REQUEST);
-            if (!await MainUnitOfWork.FollowerRepository.UpdateEditorAsync(existingFollower, AccountId, CurrentDate))
-                throw new ApiException("Can't not delete", StatusCode.SERVER_ERROR);
-
-            return ApiResponse.Success();
-        }
+        // public async Task<ApiResponse> UnFollower(Guid id)
+        // {
+        //     var existingFollower = await MainUnitOfWork.FollowerRepository.FindOneAsync(new Expression<Func<Follower, bool>>[]
+        //     {
+        //       x => !x.DeletedAt.HasValue,
+        //       x => x.Id == id
+        //     });
+        //     if (existingFollower == null)
+        //         throw new ApiException("Not found this follow", StatusCode.NOT_FOUND);
+        //     if (existingFollower.FollowTo == AccountId && existingFollower.Id  == id)
+        //         throw new ApiException("Can't not delete other's followers", StatusCode.BAD_REQUEST);
+        //     if (!await MainUnitOfWork.FollowerRepository.UpdateEditorAsync(existingFollower, AccountId, CurrentDate))
+        //         throw new ApiException("Can't not delete", StatusCode.SERVER_ERROR);
+        //
+        //     return ApiResponse.Success();
+        // }
     }
 }

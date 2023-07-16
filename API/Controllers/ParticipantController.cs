@@ -38,11 +38,11 @@ namespace API.Controllers
             return await _service.UpdateParticipant(Id, participantDto);
         }
 
-        [HttpDelete("{id:guid}")]
+        [HttpDelete("{eventId:guid}")]
         [SwaggerOperation("Delete participant")]
-        public async Task<ApiResponse> Delete(Guid id)
+        public async Task<ApiResponse> Delete(Guid eventId)
         {
-            return await _service.Delete(id);
+            return await _service.Delete(eventId);
         }
     }
 }

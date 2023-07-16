@@ -12,7 +12,7 @@ public class DatabaseContext : DbContext
     public DbSet<User> Users { set; get; }
     public DbSet<Token> Tokens { set; get; }
     public DbSet<Post> Post { set; get; }
-    public DbSet<News> News { set; get; }
+   // public DbSet<News> News { set; get; }
     public DbSet<Bird> Birds { set; get; }
     public DbSet<Comment> Comments { set; get; }
     public DbSet<Like> Likes { set; get; }
@@ -28,7 +28,7 @@ public class DatabaseContext : DbContext
         modelBuilder.ApplyConfiguration(new UserConfig());
         modelBuilder.ApplyConfiguration(new TokenConfig());
         modelBuilder.ApplyConfiguration(new PostConfig());
-        modelBuilder.ApplyConfiguration(new NewsConfig());
+        //modelBuilder.ApplyConfiguration(new NewsConfig());
         modelBuilder.ApplyConfiguration(new BirdConfig());
         modelBuilder.ApplyConfiguration(new CommentConfig());
         modelBuilder.ApplyConfiguration(new LikeConfig());

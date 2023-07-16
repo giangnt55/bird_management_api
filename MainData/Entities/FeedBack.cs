@@ -6,7 +6,7 @@ namespace MainData.Entities;
 
 public class FeedBack : BaseEntity
 {
-    public Guid ParticipantId { get; set; }
+    public Guid? ParticipantId { get; set; }
     public Guid EventId { get; set; }
     public string? Content { get; set; }
     public RateStar? Rating { get; set; }

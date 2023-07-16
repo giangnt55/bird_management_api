@@ -11,13 +11,12 @@ public class FeedbackDto : BaseDto
 
 
     //Relationship
-    public virtual Event? Event { get; set; }
-    public virtual Participant? Participant { get; set; }
+    // public virtual Event? Event { get; set; }
+    // public virtual Participant? Participant { get; set; }
 }
 
 public class FeedbackCreateDto
 {
-    public Guid ParticipantId { get; set; }
     public Guid EventId { get; set; }
     public string? Content { get; set; }
     public RateStar? Rating { get; set; }

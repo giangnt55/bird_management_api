@@ -16,7 +16,8 @@ public class MainUnitOfWork : IDisposable
     public BaseRepository<Token> TokenRepository => new(_context);
     public BaseRepository<Notification> NotificationRepository => new(_context);
     public BaseRepository<Post> PostRepository => new(_context);
-    public BaseRepository<News> NewsRepository => new(_context);
+    //Not meet the deadline
+    //public BaseRepository<News> NewsRepository => new(_context);
     public BaseRepository<Comment> CommentRepository => new(_context);
     public BaseRepository<Like> LikeRepository => new(_context);
     public BaseRepository<Bird> BirdRepository => new(_context);
