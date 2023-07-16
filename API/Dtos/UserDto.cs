@@ -6,6 +6,7 @@ namespace API.Dtos;
 public class UserDto : BaseDto
 {
   public string? Fullname { get; set; }
+  public string? Introduction { get; set; }
   public string? Avatar { get; set; }
   public UserRole Role { get; set; }
   public  UserStatus Status { get; set; }
@@ -18,6 +19,7 @@ public class UserDto : BaseDto
 public class FriendDto : BaseDto
 {
   public string? Fullname { get; set; }
+  public string? Introduction { get; set; }
   public string? Avatar { get; set; }
   public UserRole Role { get; set; }
   public  UserStatus Status { get; set; }
@@ -40,6 +42,7 @@ public class UserQuery : BaseQueryDto
 public class UserUpdate
 {
   public string? Fullname { get; set; }
+  public string? Introduction { get; set; }
   public string? Avatar { get; set; }
   public UserRole? Role { get; set; }
   public  UserStatus? Status { get; set; }
