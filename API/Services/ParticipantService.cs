@@ -12,7 +12,7 @@ public interface IParticipantService : IBaseService
     Task<ApiResponses<ParticipantDto>> GetParticipants(ParticipantQueryDto queryDto);
     Task<ApiResponse<DetailParticipantDto>> Create(ParticipantCreateDto participantDto);
     Task<ApiResponse<Participant>> UpdateParticipant(Guid Id, ParticipantUpdateDto participantDto);
-    Task<ApiResponse> Delete(Guid id);
+    Task<ApiResponse> Delete(Guid eventId);
 }
 public class ParticipantService : BaseService, IParticipantService
 {
@@ -43,14 +43,16 @@ public class ParticipantService : BaseService, IParticipantService
             return (ApiResponse<Participant>)ApiResponse.Failed();
         }
     }
-    public async Task<ApiResponse> Delete(Guid id)
+    public async Task<ApiResponse> Delete(Guid eventId)
     {
-        var existingParticipant = await MainUnitOfWork.ParticipantRepository.FindOneAsync(id);
+        var existingParticipant = await MainUnitOfWork.ParticipantRepository.FindOneAsync(new Expression<Func<Participant, bool>>[]
+        {
+            x => !x.DeletedAt.HasValue,
+            x => x.EventId == eventId,
+            x => x.CreatorId == AccountId
+        });
         if (existingParticipant == null)
             throw new ApiException("Not found this participant", StatusCode.NOT_FOUND);
-
-        if (existingParticipant.CreatorId != AccountId)
-            throw new ApiException("Can't not delete other's participant", StatusCode.BAD_REQUEST);
 
         if (!await MainUnitOfWork.ParticipantRepository.DeleteAsync(existingParticipant, AccountId, CurrentDate))
             throw new ApiException("Can't not delete", StatusCode.SERVER_ERROR);

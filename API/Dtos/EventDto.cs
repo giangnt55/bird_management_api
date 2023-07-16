@@ -22,9 +22,6 @@ public class EventDto : BaseDto
     
     public bool IsJoined { get; set; }
 
-    //Relationship
-    // public virtual IEnumerable<Participant>? Participants { get; set; }
-    // public virtual IEnumerable<FeedBack>? FeedBacks { get; set; }
 }
 public class EventCreateDto
 {
@@ -73,9 +70,8 @@ public class EventDetailDto : BaseDto
   public string? Location { get; set; }
   public string? Prerequisite { get; set; }
   public string? EvaluationStrategy { get; set; }
-    //Relationship
-    // public virtual IEnumerable<Participant>? Participants { get; set; }
-    // public virtual IEnumerable<FeedBack>? FeedBacks { get; set; }
+  public bool IsJoined { get; set; }
+  public int TotalParticipant { get; set; }
 }
 public class EventQueryDto : BaseQueryDto
 {

@@ -1,5 +1,6 @@
 ﻿using API.Dtos;
 using API.Services;
+using AppCore.Extensions;
 using AppCore.Models;
 using MainData.Entities;
 using MainData.Middlewares;
@@ -59,4 +60,13 @@ public class UserController: BaseController
   {
     return await _userService.GetSuggestionFollow(userQuery);
   }
+  
+  // [HttpGet("Export")]
+  // [SwaggerOperation("Get suggestion follow")]
+  // public async Task<Stream> Export()
+  // {
+  //   var users = await _userService.ExportUser();
+  //
+  //   return ExportHelperList<UserDto>.Export(users, "Reporting", "Danh sách người dùng");
+  // }
 }

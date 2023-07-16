@@ -17,6 +17,7 @@ public interface IUserService : IBaseService
   Task<ApiResponses<UserDto>> Gets(UserQuery userQuery);
   Task<ApiResponse<UserDto>> GetUserDetail(Guid id);
   Task<ApiResponse> UpdateInformation(Guid id, UserUpdate userUpdate);
+  Task<List<UserDto>> ExportUser();
 }
 
 public class UserService : BaseService, IUserService
@@ -196,5 +197,14 @@ public class UserService : BaseService, IUserService
     return ApiResponse.Success();
   }
 
+  public async Task<List<UserDto>> ExportUser()
+  {
+    var users = await MainUnitOfWork.UserRepository.FindAsync<UserDto>(new Expression<Func<User, bool>>[]
+    {
+      x => !x.DeletedAt.HasValue
+    }, null);
+
+    return users;
+  }
 }
 
