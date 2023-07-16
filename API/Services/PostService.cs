@@ -63,10 +63,12 @@ namespace API.Services
 
     public async Task<ApiResponses<PostDto>> GetPosts(PostQueryDto queryDto)
     {
+      var keyword = queryDto.Keyword?.ToLower().Trim();
       // Get list
       var posts = await MainUnitOfWork.PostRepository.FindResultAsync<PostDto>(new Expression<Func<Post, bool>>[]
       {
-                x => !x.DeletedAt.HasValue,
+        x => !x.DeletedAt.HasValue,
+        x => string.IsNullOrEmpty(keyword) || (x.Content.ToLower().Contains(keyword) || x.Id.ToString().ToLower().Contains(keyword))
       }, queryDto.OrderBy, queryDto.Skip(), queryDto.PageSize);
 
       // Map to get CDC

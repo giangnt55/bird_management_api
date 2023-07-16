@@ -1,5 +1,6 @@
 ﻿using API.Dtos;
 using API.Services;
+using AppCore.Extensions;
 using AppCore.Models;
 using MainData.Entities;
 using MainData.Middlewares;
@@ -58,5 +59,12 @@ public class UserController: BaseController
   public async Task<ApiResponses<FriendDto>> GetSuggestionFollow([FromQuery]UserQuery userQuery)
   {
     return await _userService.GetSuggestionFollow(userQuery);
+  }
+  
+  [HttpDelete("{id:guid}")]
+  [SwaggerOperation("Delete user")]
+  public async Task<ApiResponse> DeleteUser(Guid id)
+  {
+   return await _userService.DeleteUser(id);
   }
 }

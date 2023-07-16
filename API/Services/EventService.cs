@@ -65,10 +65,26 @@ public class EventService : BaseService, IEventService
                     x => x.Id == id
                 });
 
-
         if (existingEvent == null)
             throw new ApiException("Not found this events", StatusCode.NOT_FOUND);
 
+        existingEvent = await _mapperRepository.MapCreator(existingEvent);
+        
+        existingEvent.IsJoined = (await MainUnitOfWork.ParticipantRepository.FindOneAsync(
+            new Expression<Func<Participant, bool>>[]
+            {
+                x => !x.DeletedAt.HasValue,
+                x => x.CreatorId == AccountId,
+                x => x.EventId == existingEvent.Id
+            })) != null ;
+
+        existingEvent.TotalParticipant = (await MainUnitOfWork.ParticipantRepository.FindAsync(
+            new Expression<Func<Participant, bool>>[]
+            {
+                x => !x.DeletedAt.HasValue,
+                x => x.EventId == existingEvent.Id
+            }, null)).Count;
+        
         return ApiResponse<EventDetailDto>.Success(existingEvent);
     }
 
@@ -88,8 +104,8 @@ public class EventService : BaseService, IEventService
         var participant = MainUnitOfWork.ParticipantRepository.GetQuery();
 
         // Average rating count and average
-        int count = 0;
-
+        //int count = 0;
+        
         // Map feedbacks to each post
         var feedbacks = MainUnitOfWork.FeedbackRepository.GetQuery();
         foreach (var events in eventss.Items)
@@ -97,6 +113,13 @@ public class EventService : BaseService, IEventService
             events.TotalParticipant = participant.Count(x => x!.EventId == events.Id);
             events.TotalFeedback = feedbacks.Count(x => x!.EventId == events.Id);
             var eventFeedbacks = feedbacks.Where(x => x!.EventId == events.Id).ToList();
+            events.IsJoined = (await MainUnitOfWork.ParticipantRepository.FindOneAsync(
+                new Expression<Func<Participant, bool>>[]
+                {
+                    x => !x.DeletedAt.HasValue,
+                    x => x.CreatorId == AccountId,
+                    x => x.EventId == events.Id
+                })) != null ;
             if (eventFeedbacks.Any())
             {
                 events.AverageRating = eventFeedbacks.Average(x => (decimal)x.Rating);

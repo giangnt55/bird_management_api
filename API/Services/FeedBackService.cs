@@ -86,7 +86,9 @@ namespace API.Services
                 x => string.IsNullOrEmpty(queryDto.Content) || x.Content.Trim().ToLower().Contains(queryDto.Content.Trim().ToLower()),
                 x => queryDto.EventId == Guid.Empty || x.EventId == queryDto.EventId
             }, queryDto.OrderBy, queryDto.Skip(), queryDto.PageSize);
-           
+
+
+            feedbacks.Items = await _mapperRepository.MapCreator(feedbacks.Items.ToList());
 
             return ApiResponses<FeedbackDto>.Success(
                 feedbacks.Items,
@@ -114,15 +116,16 @@ namespace API.Services
         public async Task<ApiResponse<FeedbackDetailDto>> Create(FeedbackCreateDto feedbackDto)
         {
             var feedback = feedbackDto.ProjectTo<FeedbackCreateDto, FeedBack>();
-            var checkParticipant = MainUnitOfWork.ParticipantRepository.GetQuery().Where(x=> x.EventId == feedback.EventId && feedback.ParticipantId== x.Id).FirstOrDefault().CreatorId;
-            if (checkParticipant != null)
+
+            var checkParticipant = MainUnitOfWork.ParticipantRepository.GetQuery()
+                .Where(x => x!.EventId == feedback.EventId && x.CreatorId == AccountId && !x.DeletedAt.HasValue).FirstOrDefault();
+            if (checkParticipant == null)
             {
-                throw new ApiException("Feedback have duplication check event and participant again", StatusCode.NOT_VERIFY);
+                throw new ApiException("Not have permit to feedback this event", StatusCode.BAD_REQUEST);
             }
-            if (feedback.Rating > RateStar.Excellent && feedback.Rating < RateStar.VeryBad)
-            {
-                throw new ApiException("Rating not valid", StatusCode.NOT_VERIFY);
-            }
+
+            feedback.ParticipantId = checkParticipant.Id;
+            
             if (!await MainUnitOfWork.FeedbackRepository.InsertAsync(feedback, AccountId, CurrentDate))
                 throw new ApiException("Can't create", StatusCode.SERVER_ERROR);
 

@@ -12,7 +12,7 @@ public interface IParticipantService : IBaseService
     Task<ApiResponses<ParticipantDto>> GetParticipants(ParticipantQueryDto queryDto);
     Task<ApiResponse<DetailParticipantDto>> Create(ParticipantCreateDto participantDto);
     Task<ApiResponse<Participant>> UpdateParticipant(Guid Id, ParticipantUpdateDto participantDto);
-    Task<ApiResponse> Delete(Guid id);
+    Task<ApiResponse> Delete(Guid eventId);
 }
 public class ParticipantService : BaseService, IParticipantService
 {
@@ -43,14 +43,16 @@ public class ParticipantService : BaseService, IParticipantService
             return (ApiResponse<Participant>)ApiResponse.Failed();
         }
     }
-    public async Task<ApiResponse> Delete(Guid id)
+    public async Task<ApiResponse> Delete(Guid eventId)
     {
-        var existingParticipant = await MainUnitOfWork.ParticipantRepository.FindOneAsync(id);
+        var existingParticipant = await MainUnitOfWork.ParticipantRepository.FindOneAsync(new Expression<Func<Participant, bool>>[]
+        {
+            x => !x.DeletedAt.HasValue,
+            x => x.EventId == eventId,
+            x => x.CreatorId == AccountId
+        });
         if (existingParticipant == null)
             throw new ApiException("Not found this participant", StatusCode.NOT_FOUND);
-
-        if (existingParticipant.CreatorId != AccountId)
-            throw new ApiException("Can't not delete other's participant", StatusCode.BAD_REQUEST);
 
         if (!await MainUnitOfWork.ParticipantRepository.DeleteAsync(existingParticipant, AccountId, CurrentDate))
             throw new ApiException("Can't not delete", StatusCode.SERVER_ERROR);
@@ -104,12 +106,12 @@ public class ParticipantService : BaseService, IParticipantService
         }
 
         var participant = participantDto.ProjectTo<ParticipantCreateDto, Participant>();
-        var existingParticipant = GetParticipant(participant.Id);
-        if (existingParticipant == null)
-            throw new ApiException("Can't create", StatusCode.SERVER_ERROR);
+        // var existingParticipant = await GetParticipant(participant.Id);
+        // if (existingParticipant == null)
+        //     throw new ApiException("Can't create", StatusCode.SERVER_ERROR);
 
         // count participant to check max join and role
-        var CountParticipant = MainUnitOfWork.ParticipantRepository.GetQuery().Count(x => !x!.DeletedAt.HasValue && x.EventId == participantDto.EventId && x.Role == ParticipantRole.Participant);
+        var countParticipant = MainUnitOfWork.ParticipantRepository.GetQuery().Count(x => !x!.DeletedAt.HasValue && x.EventId == participantDto.EventId && x.Role == ParticipantRole.Participant);
 
         // get maxparti in event
         var existingEvent = await MainUnitOfWork.EventRepository.FindOneAsync<EventDetailDto>(
@@ -118,9 +120,9 @@ public class ParticipantService : BaseService, IParticipantService
                     x => !x.DeletedAt.HasValue,
                     x => x.Id == participantDto.EventId
                });
-        
+
         // check count and max
-        if (CountParticipant > existingEvent.MaxParticipants)
+        if (countParticipant > existingEvent.MaxParticipants)
         {
             throw new ApiException("Participant was fullly", StatusCode.BAD_REQUEST);
         }

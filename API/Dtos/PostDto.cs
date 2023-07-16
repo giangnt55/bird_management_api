@@ -40,5 +40,5 @@ public class DetailPostDto : BaseDto
 
 public class PostQueryDto : BaseQueryDto
 {
-
+    public string? Keyword { get; set; }
 }

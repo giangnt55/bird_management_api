@@ -7,6 +7,7 @@ public class EventDto : BaseDto
     public string EventName { get; set; } = string.Empty;
     public EventStatus Status { get; set; }
     public EventType Type { get; set; }
+    public HostType HostType { get; set; }
     public string? CoverImage { get; set; }
     public string Description { get; set; } = string.Empty;
     public int MaxParticipants { get; set; }
@@ -19,10 +20,9 @@ public class EventDto : BaseDto
     public int TotalParticipant { get; set; }
     public int TotalFeedback { get; set; }
     public decimal AverageRating { get; set; }
+    
+    public bool IsJoined { get; set; }
 
-    //Relationship
-    // public virtual IEnumerable<Participant>? Participants { get; set; }
-    // public virtual IEnumerable<FeedBack>? FeedBacks { get; set; }
 }
 public class EventCreateDto
 {
@@ -71,9 +71,8 @@ public class EventDetailDto : BaseDto
   public string? Location { get; set; }
   public string? Prerequisite { get; set; }
   public string? EvaluationStrategy { get; set; }
-    //Relationship
-    // public virtual IEnumerable<Participant>? Participants { get; set; }
-    // public virtual IEnumerable<FeedBack>? FeedBacks { get; set; }
+  public bool IsJoined { get; set; }
+  public int TotalParticipant { get; set; }
 }
 public class EventQueryDto : BaseQueryDto
 {

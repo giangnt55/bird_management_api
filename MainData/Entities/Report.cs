@@ -6,7 +6,8 @@ namespace MainData.Entities;
 
 public class Report : BaseEntity
 {
-    public Guid TargetId { get; set; }
+    public Guid? PostId { get; set; }
+    public Guid? CommentId { get; set; }
     public ReportType Type { get; set; } 
     
     //Relationship
@@ -30,7 +31,8 @@ public class ReportConfig : IEntityTypeConfiguration<Report>
 {
     public void Configure(EntityTypeBuilder<Report> builder)
     {
-        builder.Property(x => x.TargetId).IsRequired();
+        builder.Property(x => x.PostId).IsRequired(false);
+        builder.Property(x => x.CommentId).IsRequired(false);
         builder.Property(x => x.Type).IsRequired();
         
         //Relationship
@@ -40,12 +42,12 @@ public class ReportConfig : IEntityTypeConfiguration<Report>
         
         builder.HasOne(x => x.Comment)
             .WithMany(x => x.Reports)
-            .HasForeignKey(x => x.TargetId)
+            .HasForeignKey(x => x.CommentId)
             .OnDelete(DeleteBehavior.Restrict);
         
         builder.HasOne(x => x.Post)
             .WithMany(x => x.Reports)
-            .HasForeignKey(x => x.TargetId)
+            .HasForeignKey(x => x.PostId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

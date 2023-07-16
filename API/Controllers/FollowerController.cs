@@ -36,11 +36,18 @@ namespace API.Controllers
             return await _service.CreateFollower(followerDto);
         }
 
+        // [HttpDelete("{id:guid}")]
+        // [SwaggerOperation("Delete follower")]
+        // public async Task<ApiResponse> Delete(Guid id)
+        // {
+        //     return await _service.UnFollower(id);
+        // }
+        //
         [HttpDelete("{id:guid}")]
-        [SwaggerOperation("Delete follower")]
+        [SwaggerOperation("Unfollow")]
         public async Task<ApiResponse> Delete(Guid id)
         {
-            return await _service.UnFollower(id);
+            return await _service.UnFollow(id);
         }
     }
 }

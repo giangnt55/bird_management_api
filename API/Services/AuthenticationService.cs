@@ -133,14 +133,24 @@ public class AuthenticationService : BaseService, IAuthenticationService
 
   public async Task<ApiResponse> Register(RegisterDto registerDto)
   {
-    var existed = await MainUnitOfWork.UserRepository.FindAsync(new Expression<Func<User, bool>>[]
+    var existedEmail = await MainUnitOfWork.UserRepository.FindAsync(new Expression<Func<User, bool>>[]
     {
             x => !x.DeletedAt.HasValue,
             x => x.Email == registerDto.Email
     }, null);
 
-    if (existed.Any())
+    if (existedEmail.Any())
       throw new ApiException("This email has been used", StatusCode.BAD_REQUEST);
+    
+    var existedUsername = await MainUnitOfWork.UserRepository.FindAsync(new Expression<Func<User, bool>>[]
+    {
+      x => !x.DeletedAt.HasValue,
+      x => x.Username == registerDto.Username
+    }, null);
+    
+    if (existedUsername.Any())
+      throw new ApiException("This username has been used", StatusCode.BAD_REQUEST);
+    
 
     var user = registerDto.ProjectTo<RegisterDto, User>();
     var salt = SecurityExtension.GenerateSalt();
@@ -148,8 +158,9 @@ public class AuthenticationService : BaseService, IAuthenticationService
     user.Status = UserStatus.Active;
     user.Role = UserRole.Member;
     user.Salt = salt;
-    string[] emailParts = registerDto.Email.Split('@'); // Tách địa chỉ email thành mảng các phần tử dựa trên ký tự "@"
-    user.Username = emailParts[0]; ; // Gán gmail cho username
+    user.Email = user.Email?.ToLower();
+    // string[] emailParts = registerDto.Email.Split('@'); // Tách địa chỉ email thành mảng các phần tử dựa trên ký tự "@"
+    // user.Username = emailParts[0]; ; // Gán gmail cho username
     if (!await MainUnitOfWork.UserRepository.InsertAsync(user, Guid.Empty, CurrentDate))
       throw new ApiException("Register fail", StatusCode.SERVER_ERROR);
 

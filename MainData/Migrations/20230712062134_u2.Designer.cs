@@ -4,6 +4,7 @@ using MainData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MainData.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20230712062134_u2")]
+    partial class u2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -201,8 +204,7 @@ namespace MainData.Migrations
                     b.Property<Guid>("EventId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ParticipantId")
-                        .IsRequired()
+                    b.Property<Guid>("ParticipantId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("Rating")
@@ -287,6 +289,53 @@ namespace MainData.Migrations
                     b.HasIndex("PostId");
 
                     b.ToTable("Likes");
+                });
+
+            modelBuilder.Entity("MainData.Entities.News", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CoverImage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("EditorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("PublishDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("News");
                 });
 
             modelBuilder.Entity("MainData.Entities.Notification", b =>
@@ -417,6 +466,7 @@ namespace MainData.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("CommentId")
+                        .IsRequired()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -432,6 +482,7 @@ namespace MainData.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("PostId")
+                        .IsRequired()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Type")
@@ -512,9 +563,7 @@ namespace MainData.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Avatar")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(max)")
-                        .HasDefaultValue("https://thumbs.dreamstime.com/b/bird-avatar-illustration-cartoon-45383650.jpg");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -532,9 +581,6 @@ namespace MainData.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Fullname")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Introduction")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
@@ -677,7 +723,8 @@ namespace MainData.Migrations
                     b.HasOne("MainData.Entities.Comment", "Comment")
                         .WithMany("Reports")
                         .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("MainData.Entities.User", "User")
                         .WithMany("Reports")
@@ -686,7 +733,8 @@ namespace MainData.Migrations
                     b.HasOne("MainData.Entities.Post", "Post")
                         .WithMany("Reports")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Comment");
 
