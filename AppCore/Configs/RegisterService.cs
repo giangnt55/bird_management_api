@@ -5,7 +5,7 @@ namespace AppCore.Configs;
 public static class RegisterService
 {
     public static IServiceCollection RegisAllService(this IServiceCollection services, string[] projects,
-        string[] ignoreProjects = null)
+        string[]? ignoreProjects = null)
     {
         if (ignoreProjects == null) throw new ArgumentNullException(nameof(ignoreProjects));
         var assemblies = AppDomain.CurrentDomain.GetAssemblies()
