@@ -76,5 +76,5 @@ public class EventDetailDto : BaseDto
 }
 public class EventQueryDto : BaseQueryDto
 {
-    public string EventName { get; set; } = string.Empty;
+    public string? Keyword { get; set; }
 }

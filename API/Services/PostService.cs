@@ -51,7 +51,13 @@ namespace API.Services
       if (existingPost == null)
         throw new ApiException("Not found this post", StatusCode.NOT_FOUND);
 
-      if (existingPost.CreatorId != AccountId)
+      var user = await MainUnitOfWork.UserRepository.FindOneAsync(new Expression<Func<User, bool>>[]
+      {
+        x => !x.DeletedAt.HasValue,
+        x => x.Id == AccountId
+      });
+
+      if (user?.Role == UserRole.Member && existingPost.CreatorId != AccountId)
         throw new ApiException("Can't not delete other's post", StatusCode.BAD_REQUEST);
 
       if (!await MainUnitOfWork.PostRepository.DeleteAsync(existingPost, AccountId, CurrentDate))

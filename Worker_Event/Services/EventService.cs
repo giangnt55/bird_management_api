@@ -41,6 +41,8 @@ namespace Worker_Event.Services
                 {
                     ev.Status = EventStatus.Ending;
                 }
+
+                _dbContext.Update(ev);
             }
 
             try

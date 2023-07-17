@@ -16,6 +16,8 @@ public interface IUserService : IBaseService
   Task<ApiResponse<UserDto>> GetAccountInformation();
   Task<ApiResponses<FriendDto>> GetSuggestionFollow(UserQuery userQuery);
   Task<ApiResponses<UserDto>> Gets(UserQuery userQuery);
+    Task<byte[]> ExportData(UserQuery userQuery);
+
   Task<ApiResponse<UserDto>> GetUserDetail(Guid id);
   Task<ApiResponse> DeleteUser(Guid id);
   Task<ApiResponse> UpdateInformation(Guid id, UserUpdate userUpdate);
@@ -77,7 +79,7 @@ public class UserService : BaseService, IUserService
     var followDataSet = MainUnitOfWork.FollowerRepository.GetQuery().Where(x=> !x!.DeletedAt.HasValue);
 
     var users = await userDataSet
-      .Where(x => x.Id != AccountId)
+      .Where(x => x.Id != AccountId && x.Role != UserRole.Admin && x.Role != UserRole.Staff)
       .GroupJoin(followDataSet,
         user => user.Id,
         follower => follower.FollowTo,
@@ -142,7 +144,22 @@ public class UserService : BaseService, IUserService
     );
   }
 
-  public async Task<ApiResponse<UserDto>> GetUserDetail(Guid id)
+    public async Task<byte[]> ExportData(UserQuery userQuery)
+    {
+        var users = await MainUnitOfWork.UserRepository.FindAsync<UserDto>(new Expression<Func<User, bool>>[]
+        {
+        x => !x.DeletedAt.HasValue
+        }, null);
+
+        using var excelStream = ExportHelperList<UserDto>.Export(users, "User Data", "User Data");
+
+        var excelData = new byte[excelStream.Length];
+        excelStream.Read(excelData, 0, (int)excelStream.Length);
+
+        return excelData;
+    }
+
+    public async Task<ApiResponse<UserDto>> GetUserDetail(Guid id)
   {
     var user = await MainUnitOfWork.UserRepository.FindOneAsync<UserDto>(new Expression<Func<User, bool>>[]
     {
