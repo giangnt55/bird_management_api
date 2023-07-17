@@ -27,13 +27,13 @@ public class EventDto : BaseDto
 public class EventCreateDto
 {
   public string EventName { get; set; } = string.Empty;
-  public EventStatus Status { get; set; }
-  public EventType Type { get; set; }
+  public EventStatus? Status { get; set; } = EventStatus.UpComing;
+  public EventType? Type { get; set; } = EventType.Information;
   public HostType HostType { get; set; }
   public string? CoverImage { get; set; }
   public string Description { get; set; } = string.Empty;
-  public int MaxParticipants { get; set; }
-  public int MinParticipants { get; set; }
+  public int? MaxParticipants { get; set; }
+  public int? MinParticipants { get; set; } = 0;
   public DateTime StartDate { get; set; }
   public DateTime? EndDate { get; set; }
   public string? Location { get; set; }
