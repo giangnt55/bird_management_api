@@ -24,8 +24,19 @@ public class UserController: BaseController
   {
     return await _userService.Gets(userQuery);
   }
+    [HttpGet("export")]
+    [SwaggerOperation("Export Data user")]
+    public async Task<IActionResult> ExportData([FromQuery] UserQuery userQuery)
+    {
+        var excelData = await _userService.ExportData(userQuery);
 
-  [HttpGet("{id:guid}")]
+        var contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        var fileName = "user_data.xlsx";
+
+        return File(excelData, contentType, fileName);
+    }
+
+    [HttpGet("{id:guid}")]
   [SwaggerOperation("Get user detail")]
   public async Task<ApiResponse<UserDto>> GetUser(Guid id)
   {
