@@ -124,14 +124,14 @@ public class ParticipantService : BaseService, IParticipantService
         // check count and max
         if (countParticipant > existingEvent.MaxParticipants)
         {
-            throw new ApiException("Participant was fullly", StatusCode.BAD_REQUEST);
+            throw new ApiException("Participant was fully", StatusCode.BAD_REQUEST);
         }
-        else if (existingEvent.StartDate> DateTime.Now) //event start thì không join
+        
+        if (existingEvent.Status != EventStatus.UpComing) 
         {
-            throw new ApiException("event was expired", StatusCode.BAD_REQUEST);
+            throw new ApiException("Time to join this event has expired", StatusCode.BAD_REQUEST);
         }
-
-
+        
         participant.Role = ParticipantRole.Participant;
         //insert
         if (!await MainUnitOfWork.ParticipantRepository.InsertAsync(participant, AccountId))

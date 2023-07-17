@@ -121,8 +121,26 @@ namespace API.Services
                 .Where(x => x!.EventId == feedback.EventId && x.CreatorId == AccountId && !x.DeletedAt.HasValue).FirstOrDefault();
             if (checkParticipant == null)
             {
-                throw new ApiException("Not have permit to feedback this event", StatusCode.BAD_REQUEST);
+                throw new ApiException("Not have permission to make a feedback on this event", StatusCode.BAD_REQUEST);
             }
+
+            var theEvent = await MainUnitOfWork.EventRepository.FindOneAsync(new Expression<Func<Event, bool>>[]
+            {
+                x => !x.DeletedAt.HasValue,
+                x => x.Id == feedbackDto.EventId
+            });
+
+            if (theEvent != null && theEvent.Status != EventStatus.Ending)
+                throw new ApiException("This event not ending yet", StatusCode.BAD_REQUEST);
+
+            var checkExist = await MainUnitOfWork.FeedbackRepository.FindOneAsync(new Expression<Func<FeedBack, bool>>[]
+            {
+                x => !x.DeletedAt.HasValue,
+                x => x.CreatorId == AccountId
+            });
+            
+            if(checkExist != null)
+                throw new ApiException("You already feedback this event", StatusCode.BAD_REQUEST);
 
             feedback.ParticipantId = checkParticipant.Id;
             

@@ -79,7 +79,7 @@ public class UserService : BaseService, IUserService
     var followDataSet = MainUnitOfWork.FollowerRepository.GetQuery().Where(x=> !x!.DeletedAt.HasValue);
 
     var users = await userDataSet
-      .Where(x => x.Id != AccountId)
+      .Where(x => x.Id != AccountId && x.Role != UserRole.Admin && x.Role != UserRole.Staff)
       .GroupJoin(followDataSet,
         user => user.Id,
         follower => follower.FollowTo,

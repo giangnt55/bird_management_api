@@ -46,8 +46,14 @@ public class EventService : BaseService, IEventService
         var existingEvent = await MainUnitOfWork.EventRepository.FindOneAsync(id);
         if (existingEvent == null)
             throw new ApiException("Not found this events", StatusCode.NOT_FOUND);
+        
+        var user = await MainUnitOfWork.UserRepository.FindOneAsync(new Expression<Func<User, bool>>[]
+        {
+            x => !x.DeletedAt.HasValue,
+            x => x.Id == AccountId
+        });
 
-        if (existingEvent.CreatorId != AccountId)
+        if (user?.Role == UserRole.Member && existingEvent.CreatorId != AccountId)
             throw new ApiException("Can't not delete other's events", StatusCode.BAD_REQUEST);
 
         if (await MainUnitOfWork.EventRepository.DeleteAsync(existingEvent, AccountId, CurrentDate))
@@ -90,11 +96,14 @@ public class EventService : BaseService, IEventService
 
     public async Task<ApiResponses<EventDto>> GetListEvents(EventQueryDto queryDto)
     {
+        var keyword = queryDto.Keyword?.Trim().ToLower();
         // Get list
         var eventss = await MainUnitOfWork.EventRepository.FindResultAsync<EventDto>(new Expression<Func<Event, bool>>[]
         {
                 x => !x.DeletedAt.HasValue,
-                x => string.IsNullOrEmpty(queryDto.EventName) || x.EventName.Trim().ToLower().Contains(queryDto.EventName.Trim().ToLower())
+                x => string.IsNullOrEmpty(keyword) || (x.EventName.Trim().ToLower().Contains(keyword)
+                                                       || x.Description.Trim().ToLower().Contains(keyword)
+                                                       || x.Id.ToString().ToLower().Contains(keyword))
         }, queryDto.OrderBy, queryDto.Skip(), queryDto.PageSize);
 
         // Map to get CDC
