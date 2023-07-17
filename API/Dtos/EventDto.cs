@@ -7,7 +7,7 @@ public class EventDto : BaseDto
     public string EventName { get; set; } = string.Empty;
     public EventStatus Status { get; set; }
     public EventType Type { get; set; }
-    public HostType HostType { get; set; }
+    public HostType HostType { get; set; }  
     public string? CoverImage { get; set; }
     public string Description { get; set; } = string.Empty;
     public int MaxParticipants { get; set; }
