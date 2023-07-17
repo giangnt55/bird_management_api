@@ -159,11 +159,18 @@ public class AuthenticationService : BaseService, IAuthenticationService
     user.Role = UserRole.Member;
     user.Salt = salt;
     user.Email = user.Email?.ToLower();
-    // string[] emailParts = registerDto.Email.Split('@'); // Tách địa chỉ email thành mảng các phần tử dựa trên ký tự "@"
-    // user.Username = emailParts[0]; ; // Gán gmail cho username
-    if (!await MainUnitOfWork.UserRepository.InsertAsync(user, Guid.Empty, CurrentDate))
-      throw new ApiException("Register fail", StatusCode.SERVER_ERROR);
-
+        // string[] emailParts = registerDto.Email.Split('@'); // Tách địa chỉ email thành mảng các phần tử dựa trên ký tự "@"
+        // user.Username = emailParts[0]; ; // Gán gmail cho username
+        if (await MainUnitOfWork.UserRepository.InsertAsync(user, Guid.Empty, CurrentDate))
+        {
+            // Send the reset code via email
+            MailExtension _mailExtension = new MailExtension();
+            string subject = "Đăng ký thành công";
+            string resetEmailBody = "Chào bạn, \n\nChúc mừng bạn đã đăng ký thành công!\n\nXin cảm ơn và chúc mừng!";
+            _mailExtension.SendMailCommon(subject, user.Fullname, user.Email, resetEmailBody);
+            return ApiResponse.Success();
+        }
+        else throw new ApiException("Register fail", StatusCode.SERVER_ERROR);
     return ApiResponse.Success();
   }
 
