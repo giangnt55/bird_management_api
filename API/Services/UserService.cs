@@ -189,6 +189,15 @@ public class UserService : BaseService, IUserService
     if (!await MainUnitOfWork.UserRepository.DeleteAsync(user, AccountId, CurrentDate))
       throw new ApiException("Delete fail", StatusCode.SERVER_ERROR);
 
+    var userToken = await MainUnitOfWork.TokenRepository.FindAsync(new Expression<Func<Token, bool>>[]
+    {
+      x => !x.DeletedAt.HasValue,
+      x => x.UserId == user.Id
+    }, null);
+    
+    if (!await MainUnitOfWork.TokenRepository.DeleteAsync(userToken, AccountId, CurrentDate))
+      throw new ApiException("Delete token fail", StatusCode.SERVER_ERROR);
+
     return ApiResponse.Success();
   }
 

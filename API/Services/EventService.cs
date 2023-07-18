@@ -23,10 +23,18 @@ public class EventService : BaseService, IEventService
 
     public async Task<ApiResponse<EventDetailDto>> Create(EventCreateDto eventsDto)
     {
+        
+        if (eventsDto.MaxParticipants <= 0 || eventsDto.MinParticipants <=0)
+            throw new ApiException("Something wrong with the expected members", StatusCode.BAD_REQUEST);
+        
         if (eventsDto.MaxParticipants < eventsDto.MinParticipants)
         {
             throw new ApiException("MaxParticipants must be greater than MinParticipants", StatusCode.BAD_REQUEST);
         }
+        
+        if (eventsDto.StartDate <= CurrentDate)
+            throw new ApiException("Can't not create event in the past", StatusCode.BAD_REQUEST);
+        
         if (eventsDto.StartDate >= eventsDto.EndDate)
         {
             throw new ApiException("StartDate must be less than EndDate", StatusCode.BAD_REQUEST);
